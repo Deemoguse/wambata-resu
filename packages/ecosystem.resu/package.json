@@ -1,10 +1,26 @@
 {
 	"name": "@wambata/resu",
 	"version": "0.1.3",
-	"description": "Lightweight result wrapper for TypeScript with zero overhead and full control.",
+	"author": "Ruslan Radionov <cugune.tyan@gmail.com>",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Deemoguse/wambata-resu"
+	},
 	"main": "dist/cjs/index.js",
 	"module": "dist/esm/index.js",
-	"types": "dist/types/index.d.ts",
+	"devDependencies": {
+		"@rollup/plugin-terser": "^0.4.4",
+		"@rollup/plugin-typescript": "^12.1.2",
+		"@types/node": "^22.15.30",
+		"dts-bundle-generator": "^9.5.1",
+		"rollup": "^4.42.0",
+		"rollup-plugin-api-extractor": "^0.2.5"
+	},
+	"bugs": {
+		"url": "https://github.com/Deemoguse/wambata-resu/issues/new/choose",
+		"email": "cugune.tyan@gmail.com"
+	},
+	"description": "Lightweight result wrapper for TypeScript with zero overhead and full control.",
 	"engines": {
 		"node": "*"
 	},
@@ -12,12 +28,6 @@
 		"dist",
 		"./README.md"
 	],
-	"scripts": {
-		"build": "rollup -c rollup.config.ts --configPlugin @rollup/plugin-typescript",
-		"eslint": "eslint **/*.ts --fix --color",
-		"release": "npm run build && npx @changesets/cli version && npx @changesets/cli publish",
-		"types": "tsc"
-	},
 	"keywords": [
 		"result",
 		"ok",
@@ -37,25 +47,15 @@
 		"pipeline",
 		"async"
 	],
-	"author": "Ruslan Radionov <cugune.tyan@gmail.com>",
-	"bugs": {
-		"url": "https://github.com/Deemoguse/wambata-resu/issues/new/choose",
-		"email": "cugune.tyan@gmail.com"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/Deemoguse/wambata-resu"
-	},
-	"devDependencies": {
-		"@rollup/plugin-terser": "^0.4.4",
-		"@rollup/plugin-typescript": "^12.1.2",
-		"@types/node": "^22.15.30",
-		"dts-bundle-generator": "^9.5.1",
-		"rollup": "^4.42.0",
-		"rollup-plugin-api-extractor": "^0.2.5"
-	},
+	"license": "Apache-2.0",
 	"publishConfig": {
 		"access": "public"
 	},
-	"license": "Apache-2.0"
+	"scripts": {
+		"build": "rollup -c rollup.config.ts --configPlugin @rollup/plugin-typescript",
+		"test": "bun test ./test",
+		"release": "npm run build && npx @changesets/cli version && npx @changesets/cli publish",
+		"types": "tsc"
+	},
+	"types": "dist/types/index.d.ts"
 }

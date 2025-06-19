@@ -1,10 +1,10 @@
-import { _Result } from '..'
+import { _Error } from '../partials/public.error'
 import { _Logger } from '../../logger'
 import { _Helpers } from './private.helpers'
 
 export namespace _Ok
 {
-	const OK_SYMBOL = Symbol()
+	export const OK_SYMBOL = Symbol()
 
 	// ---------------------------------------------------------------------
 
@@ -143,7 +143,7 @@ export namespace _Ok
 	):
 		OkFromUnlessError<Value, Tag>
 	{
-		const result = _Result.IsError(value) ? value : OkFrom(value, tag)
+		const result = _Error.IsError(value) ? value : OkFrom(value, tag)
 		return result as OkFromUnlessError<Value, Tag>
 	}
 

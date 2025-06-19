@@ -1,4 +1,5 @@
 {
+	"private": true,
 	"name": "@wambata/resu-vue",
 	"version": "0.1.0",
 	"description": "Lightweight result wrapper for TypeScript with zero overhead and full control.",

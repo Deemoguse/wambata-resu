@@ -3,10 +3,12 @@
 	"scripts": {
 		"build": "turbo run build",
 		"dev": "turbo run dev",
+		"test": "turbo run test",
 		"turbo": "turbo",
 		"release": "turbo run release"
 	},
 	"devDependencies": {
+		"@types/bun": "^1.2.19",
 		"prettier": "^3.6.2",
 		"turbo": "^2.5.5",
 		"typescript": "5.8.3"
