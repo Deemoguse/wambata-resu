@@ -19,17 +19,3 @@ export namespace Resu
 	export import Flow = _Flow
 	export import Logger = _Logger
 }
-
-declare module './types/settings' {
-	interface Settings {
-		strict: false
-	}
-}
-
-const pipe1 = Flow.Pipe.Sync
-	(Result.OkFrom(1 as const))
-	(() => 1)()
-
-const a = Flow.Match(pipe1, {
-	ok: () => 1
-})
