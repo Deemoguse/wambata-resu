@@ -1,5 +1,6 @@
-import { _Logger } from '../../logger';
-import { _Helpers } from './private.helpers';
+import { _Logger } from '../../logger'
+import { _Helpers } from './private.helpers'
+import { _Ok } from './public.ok'
 
 export namespace _Error
 {
@@ -27,7 +28,7 @@ export namespace _Error
 	 */
 	export function Error<
 		D extends _Helpers.Result.SomeData = null,
-		T extends _Helpers.Result.SomeTag = null,
+		const T extends _Helpers.Result.SomeTag = null,
 	> (
 		params?: _Helpers.Result.Params<D, T>
 	):
@@ -95,7 +96,7 @@ export namespace _Error
 	 */
 	export function ErrorFrom<
 		V extends _Helpers.Result.SomeData = null,
-		T extends _Helpers.Result.SomeTag = null,
+		const T extends _Helpers.Result.SomeTag = null,
 	> (
 		value: V,
 		tag?: T
@@ -107,6 +108,45 @@ export namespace _Error
 			: Error({ data: value, tag })
 
 		return result as ErrorFrom<V, T>
+	}
+
+	// ---------------------------------------------------------------------
+
+	/**
+	 * Create a new `Result.Error` from the result if it is not an instance
+	 * of `Result.Ok`. If the passed value is already a `Result.Error`,
+	 * then the `tag` will be replaced with a new one.
+	 *
+	 * @template Value Source value.
+	 * @template Tag Optional tag.
+	 */
+	export type ErrorFromUnlessOk<
+		Value extends _Helpers.Result.SomeData = null,
+		Tag extends _Helpers.Result.SomeTag = null
+	> =
+		| _Ok.IsOk<Value> extends true
+			? _Ok.Ok<Value>
+			: ErrorFrom<Value, Tag>
+
+	/**
+	 * Create a new `Result.Error` from the result if it is not an instance
+	 * of `Result.Ok`. If the passed value is already a `Result.Error`,
+	 * then the `tag` will be replaced with a new one.
+	 *
+	 * @param value - Source value.
+	 * @param tag - Optional tag.
+	 */
+	export function ErrorFromUnlessOk<
+		Value extends _Helpers.Result.SomeData = null,
+		Tag extends _Helpers.Result.SomeTag = null,
+	> (
+		value: Value,
+		tag?: Tag
+	):
+		ErrorFromUnlessOk<Value, Tag>
+	{
+		const result = _Ok.IsOk(value) ? value : ErrorFrom(value, tag)
+		return result as ErrorFromUnlessOk<Value, Tag>
 	}
 
 	// ---------------------------------------------------------------------

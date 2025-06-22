@@ -7,6 +7,7 @@ export namespace _Result
 	export import Ok = _Ok.Ok
 	export import IsOk = _Ok.IsOk
 	export import OkFrom = _Ok.OkFrom
+	export import OkFromUnlessError = _Ok.OkFromUnlessError
 	export import AnyOk = _Ok.AnyOk
 	export import TaggedOk = _Ok.TaggedOk
 
@@ -14,6 +15,7 @@ export namespace _Result
 	export import Error = _Error.Error
 	export import IsError = _Error.IsError
 	export import ErrorFrom = _Error.ErrorFrom
+	export import ErrorFromUnlessOk = _Error.ErrorFromUnlessOk
 	export import AnyError = _Error.AnyError
 	export import TaggedError = _Error.TaggedError
 

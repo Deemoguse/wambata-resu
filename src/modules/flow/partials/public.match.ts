@@ -127,9 +127,7 @@ export namespace _Match
 	type GetRetursResultsFromMatches<Matcher> =
 		| Matcher[keyof Matcher] extends infer F extends (...args: any[]) => any
 			? ReturnType<F> extends infer U
-				? _Result.IsError<U> extends true
-					? U
-					: _Result.OkFrom<U>
+				? _Result.OkFromUnlessError<U>
 				: never
 			: never
 
@@ -206,6 +204,6 @@ export namespace _Match
 		if (!handler) return result as Match<Result, Matcher>
 
 		const handlerResult = (handler as MatchResultCallback<Result>)(result)
-		return (_Result.IsError(handlerResult) ? handlerResult : _Result.OkFrom(handlerResult)) as Match<Result, Matcher>
+		return _Result.OkFromUnlessError(handlerResult) as Match<Result, Matcher>
 	}
 }
