@@ -1,5 +1,5 @@
-import { Utils } from '../../../types/utils';
-import { _Result } from '../../result';
+import { Utils } from '../../../types/utils'
+import { _Result } from '../../result'
 
 export namespace _Match
 {
@@ -78,7 +78,7 @@ export namespace _Match
 	 * @template Result Any results.
 	 */
 	type MatchResultCallback<Result extends _Result.Any> =
-		| ((result: Result) => Utils.Truthy)
+		| ((result: Result) => Utils.AllowedReturn)
 
 	/**
 	 * Builds a map of status:tag strings to their corresponding callbacks.
@@ -127,9 +127,7 @@ export namespace _Match
 	type GetRetursResultsFromMatches<Matcher> =
 		| Matcher[keyof Matcher] extends infer F extends (...args: any[]) => any
 			? ReturnType<F> extends infer U
-				? _Result.IsError<U> extends true
-					? U
-					: _Result.OkFrom<U>
+				? _Result.OkFromUnlessError<U>
 				: never
 			: never
 
@@ -206,6 +204,6 @@ export namespace _Match
 		if (!handler) return result as Match<Result, Matcher>
 
 		const handlerResult = (handler as MatchResultCallback<Result>)(result)
-		return (_Result.IsError(handlerResult) ? handlerResult : _Result.OkFrom(handlerResult)) as Match<Result, Matcher>
+		return _Result.OkFromUnlessError(handlerResult) as Match<Result, Matcher>
 	}
 }

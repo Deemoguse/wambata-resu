@@ -1,4 +1,4 @@
-import { _Result } from '../../result';
+import { _Result } from '../../result'
 
 export namespace _Engine
 {

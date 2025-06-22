@@ -1,3 +1,6 @@
+import { _Result } from '../modules/result'
+import type { Settings } from './settings'
+
 export namespace Utils
 {
 	/**
@@ -8,8 +11,9 @@ export namespace Utils
 		: Source
 
 	/**
-	 * `Truthy` types.
-	 * @see https://developer.mozilla.org/en-US/docs/Glossary/Truthy
+	 * Resolution values as a result of library methods.
 	 */
-	export type Truthy = {} | null | ''
+	export type AllowedReturn = Settings['strict'] extends false
+		? ({} | null | '' | _Result.Any)
+		: _Result.Any
 }
