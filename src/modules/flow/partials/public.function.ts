@@ -1,5 +1,5 @@
-import { Utils } from '../../../types/utils';
-import { _Result } from '../../result';
+import { Utils } from '../../../types/utils'
+import { _Result } from '../../result'
 
 export namespace _Function
 {
@@ -13,7 +13,7 @@ export namespace _Function
 	 */
 	export type Sync <
 		Args extends any[],
-		Return extends Utils.Truthy
+		Return extends Utils.AllowedReturn
 	> =
 		_Result.IsResult<Return> extends true
 			? (...args: Args) => Return
@@ -28,7 +28,7 @@ export namespace _Function
 	 */
 	export function Sync<
 		Args extends any[],
-		Return extends Utils.Truthy
+		Return extends Utils.AllowedReturn
 	> (
 		fn: (...args: Args) => Return
 	):
@@ -54,7 +54,7 @@ export namespace _Function
 	 */
 	export type Async <
 		Args extends any[],
-		Return extends Utils.Truthy
+		Return extends Utils.AllowedReturn
 	> =
 		_Result.IsResult<Return> extends true
 			? (...args: Args) => Promise<Return>
@@ -69,7 +69,7 @@ export namespace _Function
 	 */
 	export function Async<
 		Args extends any[],
-		Return extends Utils.Truthy
+		Return extends Utils.AllowedReturn
 	> (
 		fn: (...args: Args) => Promise<Return>
 	):

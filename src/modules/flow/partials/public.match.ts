@@ -1,5 +1,5 @@
-import { Utils } from '../../../types/utils';
-import { _Result } from '../../result';
+import { Utils } from '../../../types/utils'
+import { _Result } from '../../result'
 
 export namespace _Match
 {
@@ -78,7 +78,7 @@ export namespace _Match
 	 * @template Result Any results.
 	 */
 	type MatchResultCallback<Result extends _Result.Any> =
-		| ((result: Result) => Utils.Truthy)
+		| ((result: Result) => Utils.AllowedReturn)
 
 	/**
 	 * Builds a map of status:tag strings to their corresponding callbacks.
