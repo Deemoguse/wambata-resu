@@ -1,6 +1,6 @@
+import { _Result } from '..'
 import { _Logger } from '../../logger'
 import { _Helpers } from './private.helpers'
-import { _Error } from './public.error'
 
 export namespace _Ok
 {
@@ -124,9 +124,7 @@ export namespace _Ok
 		Value extends _Helpers.Result.SomeData = null,
 		Tag extends _Helpers.Result.SomeTag = null
 	> =
-		| _Error.IsError<Value> extends true
-			? _Error.ErrorFrom<Value>
-			: OkFrom<Value, Tag>
+		| Value extends { status: 'error' } ? Value : OkFrom<Value, Tag>
 
 	/**
 	 * Create a new `Result.Ok` from the result if it is not an instance
@@ -145,7 +143,7 @@ export namespace _Ok
 	):
 		OkFromUnlessError<Value, Tag>
 	{
-		const result = _Error.IsError(value) ? value : OkFrom(value, tag)
+		const result = _Result.IsError(value) ? value : OkFrom(value, tag)
 		return result as OkFromUnlessError<Value, Tag>
 	}
 
@@ -164,4 +162,24 @@ export namespace _Ok
 	 */
 	export type AnyOk =
 		| Ok<_Helpers.Result.SomeData, _Helpers.Result.SomeTag>
+
+	/**
+	 * Extract all ok results from value
+	 *
+	 * @template Value Source value.
+	 */
+	export type ExtractOk <Value> =
+		| Value extends infer U
+			? IsOk<U> extends true ? U : never
+			: never
+
+	/**
+	 * Exclude all ok results from value
+	 *
+	 * @template Value Source value.
+	 */
+	export type ExcludeOk <Value> =
+		| Value extends infer U
+			? IsOk<U> extends true ? never : U
+			: never
 }

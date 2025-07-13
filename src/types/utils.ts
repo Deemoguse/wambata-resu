@@ -1,7 +1,7 @@
 import { _Result } from '../modules/result'
-import type { Settings } from './settings'
+import type { FunctionStrictSetting, StrictSetting } from './settings'
 
-export namespace Utils
+export namespace _Utils
 {
 	/**
 	 * Utility to improve type display in IDE.
@@ -11,9 +11,22 @@ export namespace Utils
 		: Source
 
 	/**
+	 * Any values other than `void` and `undefined`.
+	 */
+	export type NotVoidOrUndefined = {} | null | ''
+	/**
 	 * Resolution values as a result of library methods.
 	 */
-	export type AllowedReturn = Settings['strict'] extends false
-		? ({} | null | '' | _Result.Any)
-		: _Result.Any
+	export type AllowedReturn = StrictSetting['enable'] extends true
+		? _Result.Any
+		: NotVoidOrUndefined
+
+	/**
+	 * Resolution values as a result of `Flow.Function` methods.
+	 */
+	export type FunctionAllowedReturn = FunctionStrictSetting['enable'] extends boolean
+		? FunctionStrictSetting['enable'] extends true
+			? _Result.Any
+			: NotVoidOrUndefined
+		: AllowedReturn
 }

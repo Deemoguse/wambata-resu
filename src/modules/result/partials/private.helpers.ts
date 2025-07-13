@@ -1,4 +1,4 @@
-import { Utils } from '../../../types/utils'
+import { _Utils } from '../../../types/utils'
 
 export namespace _Helpers
 {
@@ -44,7 +44,7 @@ export namespace _Helpers
 			D extends SomeData = null,
 			T extends SomeTag = null,
 		> =
-			| Utils.Prettify<{
+			| _Utils.Prettify<{
 				status: S
 				tag: T
 				data: D

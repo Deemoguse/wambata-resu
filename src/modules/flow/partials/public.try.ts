@@ -1,5 +1,5 @@
 import { _Result } from '../../result'
-import { Utils } from '../../../types/utils'
+import { _Utils } from '../../../types/utils'
 
 export namespace _Try
 {
@@ -11,8 +11,8 @@ export namespace _Try
 	 * @template Error Failure value or `Result`.
 	 */
 	type TryReturn<
-		Ok extends Utils.AllowedReturn,
-		Error extends Utils.AllowedReturn | unknown
+		Ok extends _Utils.AllowedReturn,
+		Error extends _Utils.AllowedReturn | unknown
 	> =
 		| (Ok extends _Result.Any ? Ok : _Result.Ok<Ok>)
 		| (Error extends _Result.Any ? Error : _Result.Error<Error>)
@@ -24,8 +24,8 @@ export namespace _Try
 	 *
 	 * @template Ok Result data or `Result`.
 	 */
-	type SyncFunction<Ok extends Utils.AllowedReturn> =
-		() => Ok
+	type SyncFunction<Ok extends _Utils.AllowedReturn> =
+		| (() => Ok)
 
 	/**
 	 * Configuration for executing a function and handling errors.
@@ -34,8 +34,8 @@ export namespace _Try
 	 * @template Error Result data or `Result` tagged as error.
 	 */
 	type SyncConfig<
-		Ok extends Utils.AllowedReturn,
-		Error extends Utils.AllowedReturn
+		Ok extends _Utils.AllowedReturn,
+		Error extends _Utils.AllowedReturn
 	> = {
 		try: SyncFunction<Ok>
 	} | {
@@ -52,12 +52,12 @@ export namespace _Try
 	 * @param config Callbacks for execution and error handling.
 	 */
 	export function Sync<
-		Ok extends Utils.AllowedReturn,
-		Error extends Utils.AllowedReturn
+		Ok extends _Utils.AllowedReturn,
+		Error extends _Utils.AllowedReturn
 	> (
 		config: SyncConfig<Ok, Error>
 	):
-		Utils.Prettify<TryReturn<Ok, Error>>
+		_Utils.Prettify<TryReturn<Ok, Error>>
 
 	/**
 	/**
@@ -65,12 +65,12 @@ export namespace _Try
 	 *
 	 * @param cb Callback.
 	 */
-	export function Sync<Ok extends Utils.AllowedReturn> (cb: SyncFunction<Ok>): Utils.Prettify<TryReturn<Ok, unknown>>
+	export function Sync<Ok extends _Utils.AllowedReturn> (cb: SyncFunction<Ok>): _Utils.Prettify<TryReturn<Ok, unknown>>
 
 	// Signature implementation:
 	export function Sync<
-		Ok extends Utils.AllowedReturn,
-		Error extends Utils.AllowedReturn
+		Ok extends _Utils.AllowedReturn,
+		Error extends _Utils.AllowedReturn
 	> (
 		arg: SyncFunction<Ok> | SyncConfig<Ok, Error>
 	):
@@ -99,10 +99,10 @@ export namespace _Try
 	 * @template Ok Result data or `Result`.
 	 */
 	type AsyncFunction<
-		Ok extends Utils.AllowedReturn,
+		Ok extends _Utils.AllowedReturn,
 		Args extends any[] = []
 	> =
-		(...args: Args) => Promise<Ok>
+		| ((...args: Args) => Promise<Ok>)
 
 	/**
 	 * Configuration for executing a promise and handling errors.
@@ -111,8 +111,8 @@ export namespace _Try
 	 * @template Error Result data or `Result` tagged as error.
 	 */
 	type AsyncConfig<
-		Ok extends Utils.AllowedReturn,
-		Error extends Utils.AllowedReturn
+		Ok extends _Utils.AllowedReturn,
+		Error extends _Utils.AllowedReturn
 	> = {
 		try: AsyncFunction<Ok>,
 	} | {
@@ -128,8 +128,8 @@ export namespace _Try
 	 * @template Error Result data or `Result` tagged as error.
 	 */
 	type AsyncConfigWithSignal<
-		Ok extends Utils.AllowedReturn,
-		Error extends Utils.AllowedReturn
+		Ok extends _Utils.AllowedReturn,
+		Error extends _Utils.AllowedReturn
 	> = {
 		signal: AbortSignal
 		try: AsyncFunction<Ok, [signal: AbortSignal]>
@@ -149,12 +149,12 @@ export namespace _Try
 	 * @param config Callbacks for execution and error handling.
 	 */
 	export function Async<
-		Ok extends Utils.AllowedReturn,
-		Error extends Utils.AllowedReturn
+		Ok extends _Utils.AllowedReturn,
+		Error extends _Utils.AllowedReturn
 	> (
 		config: AsyncConfigWithSignal<Ok, Error>
 	):
-		Promise<Utils.Prettify<TryReturn<Ok, Error> | _Result.Error<globalThis.Error, 'AbortError'>>>
+		Promise<_Utils.Prettify<TryReturn<Ok, Error> | _Result.Error<globalThis.Error, 'AbortError'>>>
 
 	/**
 	 * Executes the promise `config.try` and intercepts errors via `config.catch`:
@@ -165,12 +165,12 @@ export namespace _Try
 	 * @param config Callbacks for execution and error handling.
 	 */
 	export function Async<
-		Ok extends Utils.AllowedReturn,
-		Error extends Utils.AllowedReturn
+		Ok extends _Utils.AllowedReturn,
+		Error extends _Utils.AllowedReturn
 	> (
 		config: AsyncConfig<Ok, Error>
 	):
-		Promise<Utils.Prettify<TryReturn<Ok, Error>>>
+		Promise<_Utils.Prettify<TryReturn<Ok, Error>>>
 
 	/**
 	 * Executes the callback promise and intercepts errors:
@@ -180,12 +180,12 @@ export namespace _Try
 	 *
 	 * @param cb Callback.
 	 */
-	export function Async<Ok extends Utils.AllowedReturn> (cb: AsyncFunction<Ok>): Promise<Utils.Prettify<TryReturn<Ok, unknown>>>
+	export function Async<Ok extends _Utils.AllowedReturn> (cb: AsyncFunction<Ok>): Promise<_Utils.Prettify<TryReturn<Ok, unknown>>>
 
 	// Signature implementation:
 	export async function Async<
-		Ok extends Utils.AllowedReturn,
-		Error extends Utils.AllowedReturn
+		Ok extends _Utils.AllowedReturn,
+		Error extends _Utils.AllowedReturn
 	> (
 		arg:
 			| AsyncFunction<Ok>
