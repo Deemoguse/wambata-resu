@@ -22,14 +22,3 @@ export namespace Resu
 	export import Flow = _Flow
 	export import Logger = _Logger
 }
-
-
-const res1 = Flow.Pipe.Sync
-	(() => {
-		if (Math.random() > 1) return Result.OkFrom(1 as number)
-		return Result.ErrorFrom('1 as number' as const)
-	})
-	(r => {
-		return Result.Error({ data: '1', tag: 'test2'})
-	})
-	()
