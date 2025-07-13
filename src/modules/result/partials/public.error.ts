@@ -1,6 +1,6 @@
+import { _Result } from '..'
 import { _Logger } from '../../logger'
 import { _Helpers } from './private.helpers'
-import { _Ok } from './public.ok'
 
 export namespace _Error
 {
@@ -55,7 +55,7 @@ export namespace _Error
 	 * @template V Source value.
 	 */
 	export type IsError<V> =
-		| V extends Error<any, any> ? true : false
+		| V extends { status: 'error' } ? true : false
 
 	/**
 	 * Check if the value is a success result.
@@ -124,9 +124,7 @@ export namespace _Error
 		Value extends _Helpers.Result.SomeData = null,
 		Tag extends _Helpers.Result.SomeTag = null
 	> =
-		| _Ok.IsOk<Value> extends true
-			? _Ok.Ok<Value>
-			: ErrorFrom<Value, Tag>
+		| Value extends { status: 'ok' } ? Value : ErrorFrom<Value, Tag>
 
 	/**
 	 * Create a new `Result.Error` from the result if it is not an instance
@@ -145,7 +143,7 @@ export namespace _Error
 	):
 		ErrorFromUnlessOk<Value, Tag>
 	{
-		const result = _Ok.IsOk(value) ? value : ErrorFrom(value, tag)
+		const result = _Result.IsOk(value) ? value : ErrorFrom(value, tag)
 		return result as ErrorFromUnlessOk<Value, Tag>
 	}
 
@@ -164,4 +162,24 @@ export namespace _Error
 	 */
 	export type AnyError =
 		| Error<_Helpers.Result.SomeData, _Helpers.Result.SomeTag>
+
+	/**
+	 * Extract all error results from value
+	 *
+	 * @template Value Source value.
+	 */
+	export type ExtractError <Value> =
+		| Value extends infer U
+			? IsError<U> extends true ? U : never
+			: never
+
+	/**
+	 * Exclude all error results from value
+	 *
+	 * @template Value Source value.
+	 */
+	export type ExcludeError <Value> =
+		| Value extends infer U
+			? IsError<U> extends true ? never : U
+			: never
 }

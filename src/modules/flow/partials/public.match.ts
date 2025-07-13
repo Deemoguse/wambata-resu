@@ -1,4 +1,4 @@
-import { Utils } from '../../../types/utils'
+import { _Utils } from '../../../types/utils'
 import { _Result } from '../../result'
 
 export namespace _Match
@@ -78,7 +78,7 @@ export namespace _Match
 	 * @template Result Any results.
 	 */
 	type MatchResultCallback<Result extends _Result.Any> =
-		| ((result: Result) => Utils.AllowedReturn)
+		| ((result: Result) => _Utils.AllowedReturn)
 
 	/**
 	 * Builds a map of status:tag strings to their corresponding callbacks.
@@ -90,7 +90,7 @@ export namespace _Match
 	type BuildMatchMapByStatus<
 		Result extends _Result.Any,
 		Status extends _Result.Any['status']
-	> = Utils.Prettify<{
+	> = _Utils.Prettify<{
 		[U in GetResultWithTagByStatus<Result, Status> as `${Status}:${U['tag']}`]?: MatchResultCallback<GetResultByTagAndStatus<Result, Status, U['tag']>>
 	} &
 		Pick<{
@@ -103,7 +103,7 @@ export namespace _Match
 	 *
 	 * @template Result Any results.
 	 */
-	type MatchMap<Result extends _Result.Any> =
+	export type MatchMap<Result extends _Result.Any> =
 		& BuildMatchMapByStatus<Result, 'ok'>
 		& BuildMatchMapByStatus<Result, 'error'>
 
@@ -164,7 +164,7 @@ export namespace _Match
 		Result extends _Result.Any,
 		Matcher extends MatchMap<Result>,
 	> =
-		| Utils.Prettify<ResolveMatch<Result, Matcher>>
+		| _Utils.Prettify<ResolveMatch<Result, Matcher>>
 
 	/**
 	 * A generic match function for handling `Result` objects based on their `status` and optional `tag`.

@@ -10,6 +10,8 @@ export namespace _Result
 	export import OkFromUnlessError = _Ok.OkFromUnlessError
 	export import AnyOk = _Ok.AnyOk
 	export import TaggedOk = _Ok.TaggedOk
+	export import ExtractOk = _Ok.ExtractOk
+	export import ExcludeOk = _Ok.ExcludeOk
 
 	// Aliasing `Error` namspace:
 	export import Error = _Error.Error
@@ -18,6 +20,8 @@ export namespace _Result
 	export import ErrorFromUnlessOk = _Error.ErrorFromUnlessOk
 	export import AnyError = _Error.AnyError
 	export import TaggedError = _Error.TaggedError
+	export import ExtractError = _Error.ExtractError
+	export import ExcludeError = _Error.ExcludeError
 
 	// ---------------------------------------------------------------------
 
