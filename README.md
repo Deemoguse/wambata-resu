@@ -11,13 +11,13 @@ The library's philosophy is built on three principles: **practicality over theor
 ### Installation
 
 ```bash
-npm install Resu
+npm install @wambata/resu
 ```
 
 ### Quick Example
 
 ```ts
-import { Result, Flow } from 'Rambata/resu';
+import { Result, Flow } from '@wambata/resu';
 
 // Safe data processing without exceptions
 function processUserData(input: string): Result.Ok<User> | Result.Error<string> {
