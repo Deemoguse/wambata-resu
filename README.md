@@ -1,33 +1,33 @@
 # Resu 📦
 
-**Легковесная система управления результатами для TypeScript с максимальной совместимостью и нулевыми накладными расходами.**
+**Lightweight result management system for TypeScript with maximum compatibility and zero overhead.**
 
-Resu — это практичная альтернатива сложным функциональным библиотекам для обработки ошибок, созданная для разработчиков, которые ценят простоту, производительность и готовность к production. Библиотека предоставляет типобезопасную систему `Result` без академической сложности функционального программирования, сосредотачиваясь на том, что действительно нужно в повседневной разработке.
+Resu is a practical alternative to complex functional libraries for error handling, built for developers who value simplicity, performance, and production readiness. The library provides a type-safe `Result` system without the academic complexity of functional programming, focusing on what's actually needed in everyday development.
 
-Философия библиотеки строится на трех принципах: **практичность над теорией**, **простота над абстракцией** и **совместимость над изоляцией**. Вместо заставления вас изучать десятки методов типа `map`, `flatMap`, `chain`, библиотека предоставляет минимальный, но мощный набор инструментов, которые решают реальные проблемы реальных проектов.
+The library's philosophy is built on three principles: **practicality over theory**, **simplicity over abstraction**, and **compatibility over isolation**. Instead of forcing you to learn dozens of methods like `map`, `flatMap`, `chain`, the library provides a minimal yet powerful set of tools that solve real problems in real projects.
 
-## 📦 Установка и быстрый старт
+## 📦 Installation and Quick Start
 
-### Установка
+### Installation
 
 ```bash
 npm install Resu
 ```
 
-### Быстрый пример
+### Quick Example
 
 ```ts
 import { Result, Flow } from 'Rambata/resu';
 
-// Безопасная обработка данных без исключений
+// Safe data processing without exceptions
 function processUserData(input: string): Result.Ok<User> | Result.Error<string> {
-  // Парсинг с автоматическим перехватом исключений
+  // Parsing with automatic exception catching
   const jsonResult = Flow.Try.Sync(() => JSON.parse(input));
   if (Result.IsError(jsonResult)) {
     return Result.Error({ data: "Invalid JSON format", tag: "ParseError" });
   }
 
-  // Валидация данных
+  // Data validation
   const user = jsonResult.data;
   if (!user.email || !user.name) {
     return Result.Error({ data: "Missing required fields", tag: "ValidationError" });
@@ -36,13 +36,13 @@ function processUserData(input: string): Result.Ok<User> | Result.Error<string> 
   return Result.Ok({ data: user, tag: "UserProcessed" });
 }
 
-// Использование с полной типобезопасностью
+// Usage with full type safety
 const result = processUserData('{"name": "John", "email": "john@example.com"}');
 
 if (Result.IsOk(result)) {
-  console.log(`Пользователь: ${result.data.name}`); // ✅ Типобезопасный доступ
+  console.log(`User: ${result.data.name}`); // ✅ Type-safe access
 } else {
-  console.error(`Ошибка ${result.tag}: ${result.data}`); // ✅ Категоризированная обработка
+  console.error(`Error ${result.tag}: ${result.data}`); // ✅ Categorized error handling
 }
 ```
 
@@ -50,152 +50,152 @@ if (Result.IsOk(result)) {
 
 # Settings ⚙️
 
-`Settings` — это система конфигурации библиотеки resu, определяющая поведение типизации и валидации возвращаемых значений во всех модулях. Система построена на принципе **"гибкость по умолчанию, строгость по выбору"** — библиотека изначально разрешает возвращать любые значения для простой интеграции, но предоставляет механизм включения строгой типизации для максимальной безопасности.
+`Settings` is the configuration system of the resu library, defining the behavior of typing and validation of return values across all modules. The system is built on the principle of **"flexibility by default, strictness by choice"** — the library initially allows returning any values for easy integration, but provides a mechanism to enable strict typing for maximum safety.
 
-По умолчанию каждая функция библиотеки разрешает возвращать любые значения кроме `void` и `undefined`, обеспечивая простую интеграцию без необходимости явно создавать `Result` для каждого случая. Любые значения, отличные от `Result`, автоматически оборачиваются в `Result.Ok`. Однако такой подход создает риск, что значение, которое должно быть ошибкой, случайно будет возвращено как успешный результат.
+By default, every library function allows returning any values except `void` and `undefined`, ensuring simple integration without the need to explicitly create `Result` for every case. Any values other than `Result` are automatically wrapped in `Result.Ok`. However, this approach creates a risk that a value meant to be an error might accidentally be returned as a successful result.
 
 ```ts
-// Гибкий режим (по умолчанию): любые значения разрешены
+// Flexible mode (default): any values allowed
 const flexibleFunction = Flow.Function.Sync((input: string) => {
-  if (input === 'error') return null; // Станет Result.Ok<null>
-  if (input === 'result') return Result.Error({ data: 'Real error' }); // Остается как есть
-  return 'success'; // Станет Result.Ok<string>
+  if (input === 'error') return null; // Will become Result.Ok<null>
+  if (input === 'result') return Result.Error({ data: 'Real error' }); // Remains as is
+  return 'success'; // Will become Result.Ok<string>
 });
 
-// Строгий режим: только Result разрешены
+// Strict mode: only Result allowed
 declare module 'resu' {
   interface StrictSetting { enable: true }
 }
 ```
 
-### 🛠 Основные интерфейсы настроек
+### 🛠 Main Settings Interfaces
 
-* 🔒 `StrictSetting` — глобальная настройка строгости для всех функций библиотеки
-* ⚙️ `FunctionStrictSetting` — отдельная настройка строгости для `Flow.Function` методов
-* 🎯 Module declaration через `declare module 'resu'` для активации настроек
+* 🔒 `StrictSetting` — global strictness setting for all library functions
+* ⚙️ `FunctionStrictSetting` — separate strictness setting for `Flow.Function` methods
+* 🎯 Module declaration via `declare module 'resu'` to activate settings
 
 ---
 
-## 🔓 Гибкий режим (по умолчанию)
+## 🔓 Flexible Mode (default)
 
-В гибком режиме библиотека принимает любые возвращаемые значения и автоматически преобразует их в `Result`. Это обеспечивает простую интеграцию с существующим кодом и низкий порог входа для новых пользователей.
+In flexible mode, the library accepts any return values and automatically converts them to `Result`. This ensures easy integration with existing code and a low entry barrier for new users.
 
 ```ts
-// По умолчанию все функции работают в гибком режиме
+// By default all functions work in flexible mode
 const anyValueFunction = Flow.Function.Sync((input: string) => {
-  // ✅ Все варианты допустимы
+  // ✅ All options are valid
   if (input === 'null') return null;
   if (input === 'string') return 'Hello World';
   if (input === 'object') return { data: 'test' };
   if (input === 'result') return Result.Ok({ data: 'explicit result' });
 
-  return 42; // Любое значение будет обернуто в Result.Ok
+  return 42; // Any value will be wrapped in Result.Ok
 });
 
-// Flow.Match принимает любые обработчики
+// Flow.Match accepts any handlers
 const matchResult = Flow.Match(someResult, {
-  'ok': (r) => 'Success!', // Строка будет обернута в Result.Ok
-  'error': (r) => Result.Error({ data: 'Handled error' }) // Явный Result
+  'ok': (r) => 'Success!', // String will be wrapped in Result.Ok
+  'error': (r) => Result.Error({ data: 'Handled error', tag: null }) // Explicit Result
 });
 ```
 
-## 🔒 Строгий режим
+## 🔒 Strict Mode
 
-Строгий режим требует, чтобы все функции возвращали только экземпляры `Result`, обеспечивая максимальную типобезопасность и предотвращая случайные ошибки.
+Strict mode requires all functions to return only `Result` instances, ensuring maximum type safety and preventing accidental errors.
 
 ```ts
-// Включение глобального строгого режима
+// Enable global strict mode
 declare module 'resu' {
   interface StrictSetting { enable: true }
 }
 
-// Теперь все функции требуют Result
+// Now all functions require Result
 const strictFunction = Flow.Function.Sync((input: string) => {
-  // ✅ Корректно - возвращает Result
+  // ✅ Correct - returns Result
   if (input.length === 0) {
     return Result.Error({ data: 'Empty input', tag: 'ValidationError' });
   }
   return Result.Ok({ data: input.toUpperCase(), tag: 'Processed' });
 
-  // ❌ TypeScript ошибка - обычные значения не разрешены
+  // ❌ TypeScript error - regular values not allowed
   // return input.toUpperCase();
   // return null;
 });
 ```
 
-### ⚙️ Селективная строгость для Flow.Function
+### ⚙️ Selective Strictness for Flow.Function
 
-Строгость `Flow.Function` может настраиваться отдельно от глобальных настроек, что позволяет проводить постепенную миграцию.
+`Flow.Function` strictness can be configured separately from global settings, allowing for gradual migration.
 
 ```ts
 declare module 'resu' {
-  interface StrictSetting { enable: true } // Глобально строгий режим
-  interface FunctionStrictSetting { enable: false } // Но Function остается гибким
+  interface StrictSetting { enable: true } // Globally strict mode
+  interface FunctionStrictSetting { enable: false } // But Function remains flexible
 }
 
-// Flow.Try требует Result (глобальная настройка)
+// Flow.Try requires Result (global setting)
 const strictTry = Flow.Try.Sync(() => {
-  // ❌ Ошибка - нужен Result
+  // ❌ Error - needs Result
   // return "string";
-  return Result.Ok({ data: "wrapped string" }); // ✅ Корректно
+  return Result.Ok({ data: "wrapped string" }); // ✅ Correct
 });
 
-// Flow.Function остается гибким (локальная настройка)
+// Flow.Function remains flexible (local setting)
 const flexibleFunc = Flow.Function.Sync((input: string) => {
-  return input.toUpperCase(); // ✅ Разрешено благодаря FunctionStrictSetting
+  return input.toUpperCase(); // ✅ Allowed due to FunctionStrictSetting
 });
 ```
 
-> Для новых проектов рекомендуется включать строгий режим для максимальной типовой безопасности.
+> For new projects, it's recommended to enable strict mode for maximum type safety.
 
 ---
 
 # Flow ⚡
 
-`Flow` — это пространство имён для управления потоком выполнения и композиции операций с `Result`. Модуль предоставляет инструменты для безопасного выполнения потенциально опасных операций, автоматически перехватывая исключения и преобразуя их в типобезопасные `Result`. Философия Flow основана на принципе **"исключения не должны прерывать поток выполнения"** — вместо этого все ошибки становятся явными значениями, которыми можно управлять.
+`Flow` is a namespace for managing execution flow and composing operations with `Result`. The module provides tools for safely executing potentially dangerous operations, automatically catching exceptions and converting them to type-safe `Result`. Flow's philosophy is based on the principle **"exceptions should not interrupt execution flow"** — instead, all errors become explicit values that can be managed.
 
-Flow решает ключевую проблему интеграции с существующим кодом: множество библиотек и API выбрасывают исключения, но при работе с Result-based архитектурой нужны гарантии возврата `Result`. Модуль предоставляет безопасные обёртки, которые ловят любые исключения и превращают их в предсказуемые `Result.Error`.
+Flow solves the key problem of integrating with existing code: many libraries and APIs throw exceptions, but when working with Result-based architecture, you need guarantees of returning `Result`. The module provides safe wrappers that catch any exceptions and turn them into predictable `Result.Error`.
 
 ```ts
-// ❌ Проблема: API может выбросить исключение
+// ❌ Problem: API might throw an exception
 function riskyJsonParse(json: string): ParsedData {
   return JSON.parse(json); // SyntaxError!
 }
 
-// ✅ Решение: Flow.Try гарантирует Result
+// ✅ Solution: Flow.Try guarantees Result
 const safeResult = Flow.Try.Sync(() => JSON.parse(json));
-// Результат: Result.Ok<ParsedData> | Result.Error<unknown>
+// Result: Result.Ok<ParsedData> | Result.Error<unknown>
 ```
 
-### 🛠 Часто используемые методы
+### 🛠 Frequently Used Methods
 
-* 🛡️ `Flow.Try.Sync` — для безопасного выполнения синхронных операций с автоматическим перехватом исключений
-* ⚡ `Flow.Try.Async` — для безопасного выполнения асинхронных операций с поддержкой отмены
-* 🎯 `Flow.Match` — для элегантной обработки различных типов результатов через паттерн-матчинг
-* 🔄 `Flow.Function` — для обертывания функций с гарантированным возвратом `Result`
-* 🔗 `Flow.Pipe` — для создания цепочек обработки результатов с ранним выходом при ошибках
+* 🛡️ `Flow.Try.Sync` — for safe execution of synchronous operations with automatic exception catching
+* ⚡ `Flow.Try.Async` — for safe execution of asynchronous operations with cancellation support
+* 🎯 `Flow.Match` — for elegant handling of different result types through pattern matching
+* 🔄 `Flow.Function` — for wrapping functions with guaranteed `Result` return
+* 🔗 `Flow.Pipe` — for creating processing chains with early exit on errors
 
 ---
 
-## 🛡️ Flow.Try - Безопасное выполнение
+## 🛡️ Flow.Try - Safe Execution
 
-Позволяет выполнять любые операции (синхронные и асинхронные) с гарантией, что результат всегда будет `Result`, даже если исходная операция выбрасывает исключение. Это обеспечивает предсказуемость и композицию операций без необходимости обрабатывать исключения вручную.
+Allows executing any operations (synchronous and asynchronous) with a guarantee that the result will always be `Result`, even if the original operation throws an exception. This ensures predictability and operation composition without the need to handle exceptions manually.
 
 ```ts
-// Демонстрация базового принципа работы
+// Demonstration of the basic working principle
 const safeOperation = Flow.Try.Sync(() => {
-  // Любой код здесь не может "сломать" приложение исключением
-  return JSON.parse(userInput); // Если выбросит SyntaxError - станет Result.Error
+  // Any code here cannot "break" the application with an exception
+  return JSON.parse(userInput); // If it throws SyntaxError - becomes Result.Error
 });
-// Гарантированный результат: Result.Ok<ParsedData> | Result.Error<unknown>
+// Guaranteed result: Result.Ok<ParsedData> | Result.Error<unknown>
 ```
 
-### 🔄 Flow.Try.Sync - Синхронные операции
+### 🔄 Flow.Try.Sync - Synchronous Operations
 
-`Flow.Try.Sync` выполняет синхронные функции и автоматически ловит любые исключения, преобразуя их в `Result.Error`. Если функция выполняется успешно, результат оборачивается в `Result.Ok`.
+`Flow.Try.Sync` executes synchronous functions and automatically catches any exceptions, converting them to `Result.Error`. If the function executes successfully, the result is wrapped in `Result.Ok`.
 
 ```ts
-// Простое выполнение с автоматической обработкой ошибок
+// Simple execution with automatic error handling
 const parseResult = Flow.Try.Sync(() => {
   return JSON.parse('{"valid": "json"}');
 });
@@ -204,19 +204,19 @@ const parseResult = Flow.Try.Sync(() => {
 const errorResult = Flow.Try.Sync(() => {
   return JSON.parse('invalid json');
 });
-// => Result.Error<SyntaxError> с данными исключения
+// => Result.Error<SyntaxError> with exception data
 
-// Функция уже возвращает Result - проходит без изменений
+// Function already returns Result - passes through unchanged
 const existingResult = Flow.Try.Sync(() => {
   return Result.Ok({ data: 'Already a Result', tag: 'Success' });
 });
-// => Result.Ok<string, 'Success'> (без двойного оборачивания)
+// => Result.Ok<string, 'Success'> (no double wrapping)
 ```
 
-#### 🎛️ Кастомная обработка ошибок
+#### 🎛️ Custom Error Handling
 
 ```ts
-// Расширенная конфигурация с пользовательской обработкой ошибок
+// Extended configuration with custom error handling
 const configuredResult = Flow.Try.Sync({
   try: () => {
     const data = parseUserInput(userInput);
@@ -225,38 +225,38 @@ const configuredResult = Flow.Try.Sync({
   },
   catch: (error) => Result.Error({
     tag: 'ValidationError',
-    data: `Ошибка валидации: ${error.message}`
+    data: `Validation error: ${error.message}`
   })
 });
 
-// Работа с разными типами ошибок
+// Working with different error types
 const smartErrorHandling = Flow.Try.Sync({
   try: () => performDatabaseOperation(),
   catch: (error) => {
     if (error.code === 'ECONNREFUSED') {
-      return Result.Error({ tag: 'ConnectionError', data: 'База данных недоступна' });
+      return Result.Error({ tag: 'ConnectionError', data: 'Database unavailable' });
     }
     if (error.name === 'ValidationError') {
       return Result.Error({ tag: 'DataError', data: error.message });
     }
-    return Result.Error({ tag: 'UnknownError', data: 'Неизвестная ошибка системы' });
+    return Result.Error({ tag: 'UnknownError', data: 'Unknown system error' });
   }
 });
 ```
 
-### ⚡ Flow.Try.Async - Асинхронные операции
+### ⚡ Flow.Try.Async - Asynchronous Operations
 
-`Flow.Try.Async` работает аналогично синхронной версии, но поддерживает Promise-based операции и предоставляет дополнительные возможности, включая отмену операций через AbortSignal.
+`Flow.Try.Async` works similarly to the synchronous version but supports Promise-based operations and provides additional capabilities, including operation cancellation via AbortSignal.
 
 ```ts
-// Простые асинхронные операции
+// Simple asynchronous operations
 const fetchResult = Flow.Try.Async(async () => {
   const response = await fetch('/api/data');
   return response.json();
 });
 // => Result.Ok<Data> | Result.Error<unknown>
 
-// Операции с кастомной обработкой ошибок
+// Operations with custom error handling
 const apiCall = Flow.Try.Async({
   try: async () => {
     const response = await fetch('/api/users');
@@ -267,11 +267,11 @@ const apiCall = Flow.Try.Async({
   },
   catch: (error) => Result.Error({
     tag: 'ApiError',
-    data: `API вызов неудачен: ${error.message}`
+    data: `API call failed: ${error.message}`
   })
 });
 
-// Операции с поддержкой отмены
+// Operations with cancellation support
 const controller = new AbortController();
 const cancellableOperation = Flow.Try.Async({
   signal: controller.signal,
@@ -282,28 +282,28 @@ const cancellableOperation = Flow.Try.Async({
   catch: (error) => Result.Error({ tag: 'OperationFailed', data: error.message })
 });
 
-// Можно отменить операцию
+// Can cancel the operation
 setTimeout(() => controller.abort(), 5000);
 ```
 
-#### 🧠 Умное оборачивание значений
+#### 🧠 Smart Value Wrapping
 
 ```ts
-// Обычное значение -> Result.Ok
+// Regular value -> Result.Ok
 const stringResult = Flow.Try.Async(async () => {
   await delay(100);
   return "Hello World";
 });
 // => Result.Ok<string>
 
-// Уже Result -> проходит как есть
+// Already Result -> passes as is
 const existingResult = Flow.Try.Async(async () => {
   const data = await loadData();
   return Result.Error({ tag: 'CustomError', data: 'My error' });
 });
-// => Result.Error<string, 'CustomError'> (без изменений)
+// => Result.Error<string, 'CustomError'> (unchanged)
 
-// Promise с Result
+// Promise with Result
 const asyncResult = Flow.Try.Async(async () => {
   const data = await loadUserData();
   if (!data) {
@@ -316,16 +316,16 @@ const asyncResult = Flow.Try.Async(async () => {
 
 ---
 
-## 🔄 Flow.Function - Обертывание функций
+## 🔄 Flow.Function - Function Wrapping
 
-`Flow.Function` предоставляет обёртки для превращения обычных функций в функции, гарантированно возвращающие `Result`. Это особенно полезно для создания безопасных API и стандартизации возвращаемых типов в кодовой базе.
+`Flow.Function` provides wrappers to turn regular functions into functions that guarantee `Result` return. This is especially useful for creating safe APIs and standardizing return types in the codebase.
 
-### 🔄 Flow.Function.Sync - Синхронные функции
+### 🔄 Flow.Function.Sync - Synchronous Functions
 
-`Flow.Function.Sync` оборачивает синхронную функцию, гарантируя что результат всегда будет `Result`. Если функция возвращает обычное значение, оно автоматически оборачивается в `Result.Ok`.
+`Flow.Function.Sync` wraps a synchronous function, guaranteeing that the result will always be `Result`. If the function returns a regular value, it's automatically wrapped in `Result.Ok`.
 
 ```ts
-// Обертывание простой функции
+// Wrapping a simple function
 const safeUppercase = Flow.Function.Sync((text: string) => {
   if (text.length === 0) {
     return Result.Error({ data: 'Empty string not allowed', tag: 'ValidationError' });
@@ -333,11 +333,11 @@ const safeUppercase = Flow.Function.Sync((text: string) => {
   return Result.Ok({ data: text.toUpperCase(), tag: 'Processed' });
 });
 
-// Использование обернутой функции
+// Using the wrapped function
 const result = safeUppercase("hello");
 // => Result.Ok<string, 'Processed'> | Result.Error<string, 'ValidationError'>
 
-// В строгом режиме функция должна возвращать Result
+// In strict mode, function must return Result
 const strictFunction = Flow.Function.Sync((input: number) => {
   return input > 0
     ? Result.Ok({ data: input * 2, tag: 'Doubled' })
@@ -345,12 +345,12 @@ const strictFunction = Flow.Function.Sync((input: number) => {
 });
 ```
 
-### ⚡ Flow.Function.Async - Асинхронные функции
+### ⚡ Flow.Function.Async - Asynchronous Functions
 
-`Flow.Function.Async` работает аналогично, но для асинхронных функций, обеспечивая типобезопасность для Promise-based операций.
+`Flow.Function.Async` works similarly but for asynchronous functions, ensuring type safety for Promise-based operations.
 
 ```ts
-// Обертывание асинхронной функции
+// Wrapping an asynchronous function
 const safeApiCall = Flow.Function.Async(async (endpoint: string) => {
   if (!endpoint.startsWith('/api/')) {
     return Result.Error({ data: 'Invalid endpoint format', tag: 'ValidationError' });
@@ -365,34 +365,34 @@ const safeApiCall = Flow.Function.Async(async (endpoint: string) => {
   return Result.Ok({ data, tag: 'ApiSuccess' });
 });
 
-// Использование
+// Usage
 const apiResult = await safeApiCall('/api/users');
 // => Result.Ok<ApiData, 'ApiSuccess'> | Result.Error<string, 'ValidationError' | 'HttpError'>
 ```
 
 ---
 
-## 🎯 Flow.Match - Паттерн-матчинг результатов
+## 🎯 Flow.Match - Result Pattern Matching
 
-`Flow.Match` предоставляет элегантный способ обработки различных типов результатов через паттерн-матчинг. Функция позволяет определить обработчики для различных комбинаций `status` и `tag`, обеспечивая чистый и читаемый код для сложной логики ветвления.
+`Flow.Match` provides an elegant way to handle different result types through pattern matching. The function allows defining handlers for various combinations of `status` and `tag`, ensuring clean and readable code for complex branching logic.
 
 ```ts
-// Базовое использование паттерн-матчинга
+// Basic pattern matching usage
 const handleUserResult = (result: Result.Ok<User> | Result.Error<string>) =>
   Flow.Match(result, {
     'ok': (r) => {
-      console.log(`Пользователь загружен: ${r.data.name}`);
+      console.log(`User loaded: ${r.data.name}`);
       return Result.Ok({ data: 'User processed', tag: 'Success' });
     },
 
     'error': (r) => {
-      console.error(`Ошибка: ${r.data}`);
+      console.error(`Error: ${r.data}`);
       return Result.Error({ data: 'Processing failed', tag: 'HandlingError' });
     }
   });
 ```
 
-### 🏷️ Сложный матчинг с тегами
+### 🏷️ Complex Matching with Tags
 
 ```ts
 type ApiResult =
@@ -402,13 +402,13 @@ type ApiResult =
   | Result.Error<string, 'AuthError'>;
 
 const handleApiResult = (result: ApiResult) => Flow.Match(result, {
-  // Точное соответствие статуса и тега
+  // Exact status and tag match
   'ok:Success': (r) => {
     logSuccess(r.data);
     return Result.Ok({ data: 'Data processed', tag: 'Processed' });
   },
 
-  // Специфичные обработчики ошибок по тегам
+  // Specific error handlers by tags
   'error:ValidationError': (r) => {
     showUserError(r.data);
     return Result.Error({ data: 'Validation failed', tag: 'UserError' });
@@ -426,13 +426,13 @@ const handleApiResult = (result: ApiResult) => Flow.Match(result, {
 });
 ```
 
-### 🔄 Матчинг как трансформация
+### 🔄 Matching as Transformation
 
 ```ts
-// Преобразование результатов с разными стратегиями
+// Transforming results with different strategies
 const transformResult = (input: Result.Any) => Flow.Match(input, {
   'ok': (r) => {
-    // Любой успешный результат преобразуется в стандартный формат
+    // Any successful result is transformed to standard format
     return Result.Ok({
       data: { success: true, payload: r.data },
       tag: 'Normalized'
@@ -440,7 +440,7 @@ const transformResult = (input: Result.Any) => Flow.Match(input, {
   },
 
   'error': (r) => {
-    // Любая ошибка логируется и нормализуется
+    // Any error is logged and normalized
     logError(r.tag, r.data);
     return Result.Error({
       data: { success: false, error: r.data },
@@ -452,45 +452,45 @@ const transformResult = (input: Result.Any) => Flow.Match(input, {
 
 ---
 
-## 🔗 Flow.Pipe - Цепочки обработки
+## 🔗 Flow.Pipe - Processing Chains
 
-`Flow.Pipe` создаёт цепочки (пайплайны) обработки результатов с автоматическим ранним выходом при ошибках. Если любая функция в цепочке возвращает `Result.Error`, выполнение останавливается и ошибка возвращается немедленно.
+`Flow.Pipe` creates processing chains (pipelines) with automatic early exit on errors. If any function in the chain returns `Result.Error`, execution stops and the error is returned immediately.
 
-**Уникальная особенность**: `Flow.Pipe` объекты являются **итерируемыми**, что позволяет получать доступ к промежуточным результатам каждого шага цепочки. Это мощный инструмент для отладки, мониторинга и анализа сложных операций.
+**Unique feature**: `Flow.Pipe` objects are **iterable**, which allows access to intermediate results of each step in the chain. This is a powerful tool for debugging, monitoring, and analyzing complex operations.
 
-### 🔗 Flow.Pipe.Sync - Синхронные цепочки
+### 🔗 Flow.Pipe.Sync - Synchronous Chains
 
 ```ts
-// Создание цепочки обработки данных
+// Creating a data processing chain
 const processUserData = Flow.Pipe.Sync(Result.Ok({ data: "john@example.com", tag: "Input" }))
-  // Этап 1: Валидация email
+  // Step 1: Email validation
   ((result) => {
     if (!result.data.includes('@')) {
       return Result.Error({ data: 'Invalid email format', tag: 'ValidationError' });
     }
     return Result.Ok({ data: result.data, tag: 'ValidEmail' });
   })
-  // Этап 2: Нормализация (выполнится только если этап 1 успешен)
+  // Step 2: Normalization (executes only if step 1 is successful)
   ((result) => {
     const normalized = result.data.toLowerCase().trim();
     return Result.Ok({ data: normalized, tag: 'Normalized' });
   })
-  // Этап 3: Создание пользователя
+  // Step 3: User creation
   ((result) => {
     const user = { id: Date.now(), email: result.data };
     return Result.Ok({ data: user, tag: 'UserCreated' });
   })
-  (); // Выполнение цепочки
+  (); // Chain execution
 
-// Результат: Result.Ok<User, 'UserCreated'> | Result.Error<string, 'ValidationError'>
+// Result: Result.Ok<User, 'UserCreated'> | Result.Error<string, 'ValidationError'>
 ```
 
-### ⚡ Flow.Pipe.Async - Асинхронные цепочки
+### ⚡ Flow.Pipe.Async - Asynchronous Chains
 
 ```ts
-// Асинхронная цепочка с сетевыми операциями
+// Asynchronous chain with network operations
 const userWorkflow = await Flow.Pipe.Async(Result.Ok({ data: "123", tag: "UserId" }))
-  // Этап 1: Загрузка пользователя
+  // Step 1: Load user
   (async (result) => {
     const user = await loadUserFromDB(result.data);
     if (!user) {
@@ -498,53 +498,53 @@ const userWorkflow = await Flow.Pipe.Async(Result.Ok({ data: "123", tag: "UserId
     }
     return Result.Ok({ data: user, tag: 'UserLoaded' });
   })
-  // Этап 2: Валидация (может быть синхронной в асинхронной цепочке)
+  // Step 2: Validation (can be synchronous in an async chain)
   ((result) => {
     if (!result.data.isActive) {
       return Result.Error({ data: 'User is inactive', tag: 'UserInactive' });
     }
     return Result.Ok({ data: result.data, tag: 'UserValidated' });
   })
-  // Этап 3: Обновление профиля
+  // Step 3: Update profile
   (async (result) => {
     const updated = await updateUserProfile(result.data);
     return Result.Ok({ data: updated, tag: 'ProfileUpdated' });
   })
-  (); // Выполнение асинхронной цепочки
+  (); // Execute async chain
 
-// Результат: Promise<Result.Ok<User, 'ProfileUpdated'> | Result.Error<string, 'NotFound' | 'UserInactive'>>
+// Result: Promise<Result.Ok<User, 'ProfileUpdated'> | Result.Error<string, 'NotFound' | 'UserInactive'>>
 ```
 
-### 🔄 Итерирование цепочек для отладки
+### 🔄 Iterating Chains for Debugging
 
-Одна из уникальных особенностей `Flow.Pipe` — возможность итерироваться по промежуточным результатам цепочки. Это позволяет отследить каждый шаг выполнения для отладки или аудита.
+One of the unique features of `Flow.Pipe` is the ability to iterate through intermediate chain results. This allows tracking each execution step for debugging or auditing.
 
 ```ts
-// Создание цепочки без немедленного выполнения
+// Creating a chain without immediate execution
 const pipeline = Flow.Pipe.Sync(Result.Ok({ data: 100, tag: "Initial" }))
   ((result) => Result.Ok({ data: result.data * 2, tag: 'Doubled' }))
   ((result) => Result.Ok({ data: result.data + 50, tag: 'Added' }))
   ((result) => Result.Ok({ data: result.data / 3, tag: 'Divided' }));
 
-// Итерирование через промежуточные результаты
+// Iterating through intermediate results
 for (const stepResult of pipeline) {
-  console.log(`Шаг: ${stepResult.tag}, Значение: ${stepResult.data}`);
+  console.log(`Step: ${stepResult.tag}, Value: ${stepResult.data}`);
 }
-// Вывод:
-// Шаг: Initial, Значение: 100
-// Шаг: Doubled, Значение: 200
-// Шаг: Added, Значение: 250
-// Шаг: Divided, Значение: 83.33
+// Output:
+// Step: Initial, Value: 100
+// Step: Doubled, Value: 200
+// Step: Added, Value: 250
+// Step: Divided, Value: 83.33
 
-// Получение финального результата
+// Getting the final result
 const finalResult = pipeline();
-console.log('Финальный результат:', finalResult);
+console.log('Final result:', finalResult);
 ```
 
-### 🐛 Отладка с детальным логированием
+### 🐛 Debugging with Detailed Logging
 
 ```ts
-// Создание цепочки с отслеживанием каждого шага
+// Creating a chain with step tracking
 const debugPipeline = Flow.Pipe.Sync(Result.Ok({ data: "user@EXAMPLE.COM", tag: "RawInput" }))
   ((result) => {
     const trimmed = result.data.trim();
@@ -561,9 +561,9 @@ const debugPipeline = Flow.Pipe.Sync(Result.Ok({ data: "user@EXAMPLE.COM", tag: 
     return Result.Ok({ data: result.data, tag: 'Validated' });
   });
 
-// Отладочная функция для анализа цепочки
+// Debug function for chain analysis
 function debugPipelineExecution(pipeline: any, label: string) {
-  console.log(`🔍 Анализ цепочки: ${label}`);
+  console.log(`🔍 Analyzing chain: ${label}`);
 
   const steps: any[] = [];
   let stepNumber = 1;
@@ -577,46 +577,46 @@ function debugPipelineExecution(pipeline: any, label: string) {
     };
 
     steps.push(stepInfo);
-    console.log(`  📍 Шаг ${stepInfo.step}: [${stepInfo.status.toUpperCase()}] ${stepInfo.tag} -> ${stepInfo.data}`);
+    console.log(`  📍 Step ${stepInfo.step}: [${stepInfo.status.toUpperCase()}] ${stepInfo.tag} -> ${stepInfo.data}`);
 
-    // Если встретили ошибку, останавливаемся
+    // If we encounter an error, stop
     if (Result.IsError(stepResult)) {
-      console.log(`  ❌ Цепочка прервана на шаге ${stepInfo.step}`);
+      console.log(`  ❌ Chain interrupted at step ${stepInfo.step}`);
       break;
     }
   }
 
   const finalResult = pipeline();
-  console.log(`  🎯 Финальный результат: [${finalResult.status.toUpperCase()}] ${finalResult.tag || 'untagged'}`);
+  console.log(`  🎯 Final result: [${finalResult.status.toUpperCase()}] ${finalResult.tag || 'untagged'}`);
 
   return { steps, finalResult };
 }
 
-// Использование отладочной функции
-const analysis = debugPipelineExecution(debugPipeline, "Обработка email");
+// Using the debug function
+const analysis = debugPipelineExecution(debugPipeline, "Email processing");
 ```
 
-### ⚡ Асинхронная итерация для мониторинга
+### ⚡ Asynchronous Iteration for Monitoring
 
 ```ts
-// Асинхронная цепочка с мониторингом производительности
+// Asynchronous chain with performance monitoring
 const monitoredAsyncPipeline = Flow.Pipe.Async(Result.Ok({ data: { userId: 123 }, tag: "Input" }))
   (async (result) => {
-    await delay(100); // Симуляция загрузки
+    await delay(100); // Simulate loading
     return Result.Ok({ data: { ...result.data, profile: 'loaded' }, tag: 'ProfileLoaded' });
   })
   (async (result) => {
-    await delay(200); // Симуляция валидации
+    await delay(200); // Simulate validation
     return Result.Ok({ data: { ...result.data, validated: true }, tag: 'Validated' });
   })
   (async (result) => {
-    await delay(150); // Симуляция сохранения
+    await delay(150); // Simulate saving
     return Result.Ok({ data: { ...result.data, saved: true }, tag: 'Saved' });
   });
 
-// Асинхронная функция мониторинга
+// Asynchronous monitoring function
 async function monitorAsyncPipeline(pipeline: any, label: string) {
-  console.log(`⚡ Мониторинг асинхронной цепочки: ${label}`);
+  console.log(`⚡ Monitoring async chain: ${label}`);
 
   const startTime = Date.now();
   let stepStartTime = startTime;
@@ -627,34 +627,34 @@ async function monitorAsyncPipeline(pipeline: any, label: string) {
     const stepDuration = stepEndTime - stepStartTime;
     const totalDuration = stepEndTime - startTime;
 
-    console.log(`  ⏱️  Шаг ${stepNumber++}: [${stepResult.status.toUpperCase()}] ${stepResult.tag}`);
-    console.log(`     Время шага: ${stepDuration}ms, Общее время: ${totalDuration}ms`);
-    console.log(`     Данные: ${JSON.stringify(stepResult.data)}`);
+    console.log(`  ⏱️  Step ${stepNumber++}: [${stepResult.status.toUpperCase()}] ${stepResult.tag}`);
+    console.log(`     Step time: ${stepDuration}ms, Total time: ${totalDuration}ms`);
+    console.log(`     Data: ${JSON.stringify(stepResult.data)}`);
 
     stepStartTime = stepEndTime;
 
-    // Если встретили ошибку, останавливаемся
+    // If we encounter an error, stop
     if (Result.IsError(stepResult)) {
-      console.log(`  ❌ Асинхронная цепочка прервана на шаге ${stepNumber - 1}`);
+      console.log(`  ❌ Async chain interrupted at step ${stepNumber - 1}`);
       break;
     }
   }
 
   const finalResult = await pipeline();
   const totalTime = Date.now() - startTime;
-  console.log(`  🏁 Общее время выполнения: ${totalTime}ms`);
+  console.log(`  🏁 Total execution time: ${totalTime}ms`);
 
   return finalResult;
 }
 
-// Использование асинхронного мониторинга
-const monitoredResult = await monitorAsyncPipeline(monitoredAsyncPipeline, "Обработка пользователя");
+// Using async monitoring
+const monitoredResult = await monitorAsyncPipeline(monitoredAsyncPipeline, "User processing");
 ```
 
-### 📊 Анализ производительности цепочек
+### 📊 Chain Performance Analysis
 
 ```ts
-// Утилита для профилирования цепочек
+// Utility for profiling chains
 class PipelineProfiler {
   static profile<T>(pipeline: T, label: string = 'Pipeline') {
     const metrics = {
@@ -669,7 +669,7 @@ class PipelineProfiler {
     let stepStartTime = startTime;
     let stepNumber = 1;
 
-    // Итерируемся по шагам цепочки
+    // Iterate through chain steps
     for (const stepResult of pipeline as any) {
       const stepEndTime = performance.now();
       const stepDuration = stepEndTime - stepStartTime;
@@ -693,7 +693,7 @@ class PipelineProfiler {
 
     metrics.totalDuration = performance.now() - startTime;
 
-    // Выполняем цепочку для получения финального результата
+    // Execute chain to get final result
     const finalResult = (pipeline as any)();
 
     return { metrics, result: finalResult };
@@ -702,186 +702,186 @@ class PipelineProfiler {
   static printReport(analysis: ReturnType<typeof PipelineProfiler.profile>) {
     const { metrics, result } = analysis;
 
-    console.log(`\n📊 Отчет производительности: ${metrics.label}`);
-    console.log(`🎯 Результат: [${result.status.toUpperCase()}] ${result.tag || 'untagged'}`);
-    console.log(`⏱️  Общее время: ${metrics.totalDuration.toFixed(2)}ms`);
-    console.log(`${metrics.successful ? '✅' : '❌'} Успешно: ${metrics.successful}`);
+    console.log(`\n📊 Performance report: ${metrics.label}`);
+    console.log(`🎯 Result: [${result.status.toUpperCase()}] ${result.tag || 'untagged'}`);
+    console.log(`⏱️  Total time: ${metrics.totalDuration.toFixed(2)}ms`);
+    console.log(`${metrics.successful ? '✅' : '❌'} Successful: ${metrics.successful}`);
 
     if (metrics.errorStep) {
-      console.log(`🛑 Ошибка на шаге: ${metrics.errorStep}`);
+      console.log(`🛑 Error at step: ${metrics.errorStep}`);
     }
 
-    console.log('\n📈 Детали по шагам:');
+    console.log('\n📈 Step details:');
     metrics.steps.forEach(step => {
       const icon = step.status === 'ok' ? '✅' : '❌';
-      console.log(`  ${icon} Шаг ${step.step}: ${step.tag} (${step.duration.toFixed(2)}ms)`);
+      console.log(`  ${icon} Step ${step.step}: ${step.tag} (${step.duration.toFixed(2)}ms)`);
     });
 
-    // Анализ узких мест
+    // Bottleneck analysis
     const slowestStep = metrics.steps.reduce((prev, current) =>
       prev.duration > current.duration ? prev : current
     );
-    console.log(`\n🐌 Самый медленный шаг: ${slowestStep.tag} (${slowestStep.duration.toFixed(2)}ms)`);
+    console.log(`\n🐌 Slowest step: ${slowestStep.tag} (${slowestStep.duration.toFixed(2)}ms)`);
   }
 }
 
-// Использование профайлера
+// Using the profiler
 const complexPipeline = Flow.Pipe.Sync(Result.Ok({ data: largeDataset, tag: "Input" }))
   ((result) => Result.Ok({ data: processData(result.data), tag: 'Processed' }))
   ((result) => Result.Ok({ data: validateData(result.data), tag: 'Validated' }))
   ((result) => Result.Ok({ data: transformData(result.data), tag: 'Transformed' }));
 
-const analysis = PipelineProfiler.profile(complexPipeline, "Обработка большого датасета");
+const analysis = PipelineProfiler.profile(complexPipeline, "Large dataset processing");
 PipelineProfiler.printReport(analysis);
 ```
 
-#### 🛑 Ранний выход при ошибках
+#### 🛑 Early Exit on Errors
 
 ```ts
-// Демонстрация раннего выхода с итерированием
+// Demonstrating early exit with iteration
 const chainWithEarlyExit = Flow.Pipe.Sync(Result.Ok({ data: 5, tag: "Input" }))
   ((result) => {
     const doubled = result.data * 2;
-    return Result.Ok({ data: doubled, tag: 'Doubled' }); // Успешно: 10
+    return Result.Ok({ data: doubled, tag: 'Doubled' }); // Success: 10
   })
   ((result) => {
-    // Эта функция вернет ошибку
+    // This function will return an error
     return Result.Error({ data: 'Artificial failure', tag: 'TestError' });
   })
   ((result) => {
-    // ❌ Эта функция НЕ ВЫПОЛНИТСЯ из-за ошибки выше
+    // ❌ This function WON'T EXECUTE due to the error above
     return Result.Ok({ data: result.data + 100, tag: 'WontExecute' });
   });
 
-// Отслеживание того, где именно произошла ошибка
-console.log('🔍 Отслеживание выполнения цепочки:');
+// Tracking where exactly the error occurred
+console.log('🔍 Tracking chain execution:');
 for (const stepResult of chainWithEarlyExit) {
-  console.log(`Шаг: ${stepResult.tag}, Статус: ${stepResult.status}`);
+  console.log(`Step: ${stepResult.tag}, Status: ${stepResult.status}`);
   if (Result.IsError(stepResult)) {
-    console.log(`❌ Выполнение остановлено из-за ошибки: ${stepResult.data}`);
+    console.log(`❌ Execution stopped due to error: ${stepResult.data}`);
     break;
   }
 }
 
-// Результат: Result.Error<string, 'TestError'>
+// Result: Result.Error<string, 'TestError'>
 const finalResult = chainWithEarlyExit();
 ```
 
 ---
 
-## 📋 Полная справка методов Flow
+## 📋 Complete Flow Method Reference
 
 ### 🛡️ Flow.Try:
-| 🧩 Имя | 📦 Тип | ⚙️ Сигнатура | 📖 Описание |
+| 🧩 Name | 📦 Type | ⚙️ Signature | 📖 Description |
 |---------|---------|-------------|-------------|
-| `Try.Sync` | метод | `Flow.Try.Sync<Ok, Error>(callback)` <br> `Flow.Try.Sync<Ok, Error>(config)` | 🔄 Безопасно выполняет синхронную функцию, автоматически ловя исключения. |
-| `Try.Async` | метод | `Flow.Try.Async<Ok, Error>(callback)` <br> `Flow.Try.Async<Ok, Error>(config)` | ⚡ Безопасно выполняет асинхронную функцию с опциональной поддержкой отмены. |
+| `Try.Sync` | method | `Flow.Try.Sync<Ok, Error>(callback)` <br> `Flow.Try.Sync<Ok, Error>(config)` | 🔄 Safely executes a synchronous function, automatically catching exceptions. |
+| `Try.Async` | method | `Flow.Try.Async<Ok, Error>(callback)` <br> `Flow.Try.Async<Ok, Error>(config)` | ⚡ Safely executes an asynchronous function with optional cancellation support. |
 
 ### 🔄 Flow.Function:
-| 🧩 Имя | 📦 Тип | ⚙️ Сигнатура | 📖 Описание |
+| 🧩 Name | 📦 Type | ⚙️ Signature | 📖 Description |
 |---------|---------|-------------|-------------|
-| `Function.Sync` | метод | `Flow.Function.Sync<Args, Return>(fn)` | 🔄 Оборачивает синхронную функцию, гарантируя возврат Result. |
-| `Function.Async` | метод | `Flow.Function.Async<Args, Return>(fn)` | ⚡ Оборачивает асинхронную функцию, гарантируя возврат Result. |
+| `Function.Sync` | method | `Flow.Function.Sync<Args, Return>(fn)` | 🔄 Wraps a synchronous function, guaranteeing Result return. |
+| `Function.Async` | method | `Flow.Function.Async<Args, Return>(fn)` | ⚡ Wraps an asynchronous function, guaranteeing Result return. |
 
 ### 🎯 Flow.Match:
-| 🧩 Имя | 📦 Тип | ⚙️ Сигнатура | 📖 Описание |
+| 🧩 Name | 📦 Type | ⚙️ Signature | 📖 Description |
 |---------|---------|-------------|-------------|
-| `Match` | метод | `Flow.Match<Result, Matcher>(result, matcher)` | 🎯 Выполняет паттерн-матчинг результатов по статусу и тегам. |
+| `Match` | method | `Flow.Match<Result, Matcher>(result, matcher)` | 🎯 Performs pattern matching on results by status and tags. |
 
 ### 🔗 Flow.Pipe:
-| 🧩 Имя | 📦 Тип | ⚙️ Сигнатура | 📖 Описание |
+| 🧩 Name | 📦 Type | ⚙️ Signature | 📖 Description |
 |---------|---------|-------------|-------------|
-| `Pipe.Sync` | метод | `Flow.Pipe.Sync<A>(init)` | 🔗 Создает синхронную цепочку обработки с ранним выходом при ошибках. |
-| `Pipe.Async` | метод | `Flow.Pipe.Async<A>(init)` | ⚡ Создает асинхронную цепочку обработки с ранним выходом при ошибках. |
+| `Pipe.Sync` | method | `Flow.Pipe.Sync<A>(init)` | 🔗 Creates a synchronous processing chain with early exit on errors. |
+| `Pipe.Async` | method | `Flow.Pipe.Async<A>(init)` | ⚡ Creates an asynchronous processing chain with early exit on errors. |
 
 ---
 
 # Logger 📝
 
-`Logger` — это система логирования для автоматической записи создаваемых `Result` объектов. Модуль предоставляет гибкую конфигурацию для отслеживания успешных и неуспешных результатов с возможностью подключения пользовательских обработчиков логирования. Система работает на принципе **"логируй по необходимости"** — можно включить автоматическое логирование глобально или управлять им для каждого `Result` индивидуально.
+`Logger` is a logging system for automatically recording created `Result` objects. The module provides flexible configuration for tracking successful and unsuccessful results with the ability to connect custom logging handlers. The system works on the principle of **"log as needed"** — you can enable automatic logging globally or manage it for each `Result` individually.
 
-Logger интегрирован с модулем `Result` на уровне создания объектов, что обеспечивает автоматическое логирование без дополнительного кода в местах использования. Это особенно полезно для отладки, мониторинга производительности и аудита в production среде.
+Logger is integrated with the `Result` module at the object creation level, which ensures automatic logging without additional code at usage points. This is especially useful for debugging, performance monitoring, and auditing in production environments.
 
 ```ts
-// Автоматическое логирование при создании Result
+// Automatic logging when creating Result
 Logger.LogOkResult = true;
 Logger.LogErrorResult = true;
 
 const result = Result.Error({ data: 'Connection failed', tag: 'NetworkError' });
-// Автоматически вызовет Logger.Engine с информацией об ошибке
+// Will automatically call Logger.Engine with error information
 ```
 
-### 🛠 Основные компоненты
+### 🛠 Main Components
 
-* 🎛️ `Logger.LogOkResult` — глобальный флаг для автоматического логирования успешных результатов
-* 🎛️ `Logger.LogErrorResult` — глобальный флаг для автоматического логирования результатов с ошибками
-* 🔧 `Logger.Engine` — пользовательская функция-обработчик для фактического логирования
+* 🎛️ `Logger.LogOkResult` — global flag for automatic logging of successful results
+* 🎛️ `Logger.LogErrorResult` — global flag for automatic logging of error results
+* 🔧 `Logger.Engine` — custom handler function for actual logging
 
 ---
 
-## 🎛️ Глобальные флаги логирования
+## 🎛️ Global Logging Flags
 
-Система предоставляет два глобальных флага для управления автоматическим логированием различных типов результатов. Эти настройки влияют на все создаваемые `Result` объекты, но могут быть переопределены параметром `log` при создании конкретного результата.
+The system provides two global flags for managing automatic logging of different result types. These settings affect all created `Result` objects but can be overridden by the `log` parameter when creating a specific result.
 
-### ✅ Logger.LogOkResult - Логирование успешных результатов
+### ✅ Logger.LogOkResult - Logging Successful Results
 
 ```ts
-// Включение автоматического логирования успешных результатов
+// Enable automatic logging of successful results
 Logger.LogOkResult = true;
 
-// Теперь все Result.Ok будут автоматически логироваться
+// Now all Result.Ok will be automatically logged
 const userResult = Result.Ok({ data: { id: 123, name: 'John' }, tag: 'UserLoaded' });
-// Автоматически вызовет Logger.Engine с этим результатом
+// Will automatically call Logger.Engine with this result
 
 const apiResult = Result.OkFrom(apiResponse, 'ApiSuccess');
-// Также будет залогирован автоматически
+// Will also be logged automatically
 
-// Отключение автоматического логирования успешных результатов
+// Disable automatic logging of successful results
 Logger.LogOkResult = false;
 
-// Принудительное логирование конкретного результата
+// Force logging of a specific result
 const importantResult = Result.Ok({
   data: 'Critical operation completed',
   tag: 'SystemRecovery',
-  log: true // Переопределяет глобальную настройку
+  log: true // Overrides global setting
 });
 ```
 
-### ❌ Logger.LogErrorResult - Логирование результатов с ошибками
+### ❌ Logger.LogErrorResult - Logging Error Results
 
 ```ts
-// Включение автоматического логирования ошибок (обычно включено в production)
+// Enable automatic error logging (usually enabled in production)
 Logger.LogErrorResult = true;
 
-// Все Result.Error будут автоматически логироваться
+// All Result.Error will be automatically logged
 const networkError = Result.Error({
   data: 'Connection timeout',
   tag: 'NetworkError'
 });
-// Автоматически отправит информацию об ошибке в Logger.Engine
+// Will automatically send error information to Logger.Engine
 
 const validationError = Result.ErrorFrom('Invalid email format', 'ValidationError');
-// Также будет залогирован
+// Will also be logged
 
-// Подавление логирования для конкретной ошибки
+// Suppress logging for a specific error
 const expectedError = Result.Error({
   data: 'User cancelled operation',
   tag: 'UserCancellation',
-  log: false // Не логировать даже при включенном LogErrorResult
+  log: false // Don't log even with LogErrorResult enabled
 });
 ```
 
-## 🔧 Logger.Engine - Пользовательский обработчик
+## 🔧 Logger.Engine - Custom Handler
 
-`Logger.Engine` — это функция-обработчик, которая вызывается для фактического логирования `Result` объектов. По умолчанию `Engine` равен `null`, что означает отсутствие логирования. Разработчик должен установить свою функцию для активации системы логирования.
+`Logger.Engine` is a handler function that's called for actual logging of `Result` objects. By default, `Engine` is `null`, which means no logging. The developer must set their own function to activate the logging system.
 
 ```ts
-// Простая настройка логирования в консоль
+// Simple console logging setup
 Logger.Engine = async (result) => {
   console.log(`[${result.status.toUpperCase()}] ${result.tag || 'untagged'}:`, result.data);
 };
 
-// Более сложная настройка с разделением по типам
+// More complex setup with type separation
 Logger.Engine = async (result) => {
   const timestamp = new Date().toISOString();
   const message = {
@@ -892,15 +892,15 @@ Logger.Engine = async (result) => {
   };
 
   if (Result.IsOk(result)) {
-    // Логирование успешных операций
+    // Log successful operations
     console.info(`✅ [${timestamp}] Success:`, message);
     await sendToAnalytics('success', message);
   } else {
-    // Логирование ошибок
+    // Log errors
     console.error(`❌ [${timestamp}] Error:`, message);
     await sendToErrorTracking('error', message);
 
-    // Критические ошибки отправляем в Slack
+    // Send critical errors to Slack
     if (result.tag === 'DatabaseError' || result.tag === 'SystemFailure') {
       await sendSlackAlert(message);
     }
@@ -908,10 +908,10 @@ Logger.Engine = async (result) => {
 };
 ```
 
-### 🔧 Интеграция с внешними сервисами
+### 🔧 Integration with External Services
 
 ```ts
-// Интеграция с популярными сервисами логирования
+// Integration with popular logging services
 Logger.Engine = async (result) => {
   const logData = {
     level: Result.IsOk(result) ? 'info' : 'error',
@@ -922,7 +922,7 @@ Logger.Engine = async (result) => {
   };
 
   try {
-    // Sentry для ошибок
+    // Sentry for errors
     if (Result.IsError(result)) {
       Sentry.captureException(new Error(logData.message), {
         tags: { resultTag: result.tag },
@@ -930,30 +930,30 @@ Logger.Engine = async (result) => {
       });
     }
 
-    // DataDog для метрик
+    // DataDog for metrics
     dogstatsd.increment('result.created', 1, [`status:${result.status}`, `tag:${result.tag}`]);
 
-    // Собственная система логирования
+    // Custom logging system
     await customLogger.log(logData);
 
   } catch (engineError) {
-    // Важно: ошибки в Logger.Engine не должны влиять на основную логику
+    // Important: errors in Logger.Engine should not affect main logic
     console.error('Logger.Engine failed:', engineError);
   }
 };
 ```
 
-## 🎯 Паттерны использования
+## 🎯 Usage Patterns
 
-### 🏭 Production конфигурация
+### 🏭 Production Configuration
 
 ```ts
-// Типичная настройка для production среды
-Logger.LogOkResult = false;  // Обычно отключено для performance
-Logger.LogErrorResult = true; // Всегда включено для отслеживания проблем
+// Typical production environment setup
+Logger.LogOkResult = false;  // Usually disabled for performance
+Logger.LogErrorResult = true; // Always enabled for problem tracking
 
 Logger.Engine = async (result) => {
-  // Только ошибки в production
+  // Only errors in production
   if (Result.IsError(result)) {
     const errorInfo = {
       timestamp: new Date().toISOString(),
@@ -963,7 +963,7 @@ Logger.Engine = async (result) => {
       service: 'user-service'
     };
 
-    // Отправка в систему мониторинга
+    // Send to monitoring system
     await Promise.all([
       sendToErrorTracking(errorInfo),
       updateErrorMetrics(result.tag),
@@ -973,18 +973,18 @@ Logger.Engine = async (result) => {
 };
 ```
 
-### 🧪 Development конфигурация
+### 🧪 Development Configuration
 
 ```ts
-// Настройка для разработки
-Logger.LogOkResult = true;   // Включено для отладки
-Logger.LogErrorResult = true; // Включено для отладки
+// Development setup
+Logger.LogOkResult = true;   // Enabled for debugging
+Logger.LogErrorResult = true; // Enabled for debugging
 
 Logger.Engine = async (result) => {
   const colors = {
-    ok: '\x1b[32m',     // Зеленый
-    error: '\x1b[31m',  // Красный
-    reset: '\x1b[0m'    // Сброс
+    ok: '\x1b[32m',     // Green
+    error: '\x1b[31m',  // Red
+    reset: '\x1b[0m'    // Reset
   };
 
   const color = colors[result.status] || colors.reset;
@@ -995,7 +995,7 @@ Logger.Engine = async (result) => {
     result.data
   );
 
-  // В development можно также сохранять в файл для анализа
+  // In development, can also save to file for analysis
   if (process.env.DEBUG_TO_FILE) {
     await fs.appendFile('debug.log', JSON.stringify({
       timestamp: Date.now(),
@@ -1005,24 +1005,24 @@ Logger.Engine = async (result) => {
 };
 ```
 
-### 🔍 Селективное логирование
+### 🔍 Selective Logging
 
 ```ts
-// Логирование только критических операций
+// Log only critical operations
 Logger.LogOkResult = false;
-Logger.LogErrorResult = false; // Отключено глобально
+Logger.LogErrorResult = false; // Disabled globally
 
-// Но включаем для важных операций через параметр log
+// But enable for important operations via log parameter
 const criticalOperation = async () => {
   const result = await Flow.Try.Async({
     try: async () => {
       const data = await performCriticalDatabaseOperation();
-      return Result.Ok({ data, tag: 'CriticalSuccess', log: true }); // Принудительно логируем
+      return Result.Ok({ data, tag: 'CriticalSuccess', log: true }); // Force logging
     },
     catch: (error) => Result.Error({
       tag: 'CriticalFailure',
       data: error.message,
-      log: true // Принудительно логируем критические ошибки
+      log: true // Force log critical errors
     })
   });
 
@@ -1032,33 +1032,33 @@ const criticalOperation = async () => {
 
 ---
 
-## 📋 Полная справка Logger
+## 📋 Complete Logger Reference
 
-### 🎛️ Глобальные настройки:
-| 🧩 Имя | 📦 Тип | ⚙️ Сигнатура | 📖 Описание |
+### 🎛️ Global Settings:
+| 🧩 Name | 📦 Type | ⚙️ Signature | 📖 Description |
 |---------|---------|-------------|-------------|
-| `LogOkResult` | переменная | `boolean` | 🎛️ Глобальный флаг для автоматического логирования успешных результатов. По умолчанию `false`. |
-| `LogErrorResult` | переменная | `boolean` | 🎛️ Глобальный флаг для автоматического логирования результатов с ошибками. По умолчанию `false`. |
+| `LogOkResult` | variable | `boolean` | 🎛️ Global flag for automatic logging of successful results. Default `false`. |
+| `LogErrorResult` | variable | `boolean` | 🎛️ Global flag for automatic logging of error results. Default `false`. |
 
-### 🔧 Обработчик логирования:
-| 🧩 Имя | 📦 Тип | ⚙️ Сигнатура | 📖 Описание |
+### 🔧 Logging Handler:
+| 🧩 Name | 📦 Type | ⚙️ Signature | 📖 Description |
 |---------|---------|-------------|-------------|
-| `Engine` | переменная | `null \| ((result: Result.Any) => Promise<any>)` | 🔧 Пользовательская асинхронная функция для фактического логирования Result объектов. По умолчанию `null`. |
+| `Engine` | variable | `null \| ((result: Result.Any) => Promise<any>)` | 🔧 Custom asynchronous function for actual Result object logging. Default `null`. |
 
-### 🎯 Принципы интеграции:
-- **Автоматичность**: Логирование происходит автоматически при создании `Result` без дополнительного кода
-- **Гибкость**: Можно переопределить глобальные настройки для конкретных результатов через параметр `log`
-- **Безопасность**: Ошибки в `Logger.Engine` не влияют на основную логику приложения
-- **Производительность**: `Engine` вызывается асинхронно и не блокирует создание `Result`
+### 🎯 Integration Principles:
+- **Automaticity**: Logging happens automatically when creating `Result` without additional code
+- **Flexibility**: Can override global settings for specific results via the `log` parameter
+- **Safety**: Errors in `Logger.Engine` don't affect main application logic
+- **Performance**: `Engine` is called asynchronously and doesn't block `Result` creation
 
 ---
 
-## 🎨 Паттерны интеграции модулей
+## 🎨 Module Integration Patterns
 
-### 🔗 Комплексная обработка пользовательских операций
+### 🔗 Comprehensive User Operation Handling
 
 ```ts
-// Настройка логирования для пользовательских операций
+// Configure logging for user operations
 Logger.LogErrorResult = true;
 Logger.Engine = async (result) => {
   if (Result.IsError(result) && result.tag?.includes('User')) {
@@ -1066,16 +1066,16 @@ Logger.Engine = async (result) => {
   }
 };
 
-// Комплексная функция с использованием всех модулей
+// Comprehensive function using all modules
 async function processUserRegistration(userData: UserRegistrationData) {
-  // Этап 1: Валидация с Flow.Try
+  // Step 1: Validation with Flow.Try
   const validationResult = Flow.Try.Sync(() => {
     if (!userData.email) return Result.Error({ data: 'Email required', tag: 'UserValidationError' });
     if (!userData.password) return Result.Error({ data: 'Password required', tag: 'UserValidationError' });
     return Result.Ok({ data: userData, tag: 'UserDataValidated' });
   });
 
-  // Этап 2: Обработка результата валидации с Flow.Match
+  // Step 2: Process validation result with Flow.Match
   const processedValidation = Flow.Match(validationResult, {
     'ok:UserDataValidated': (r) => {
       return Result.Ok({ data: normalizeUserData(r.data), tag: 'UserDataNormalized' });
@@ -1087,9 +1087,9 @@ async function processUserRegistration(userData: UserRegistrationData) {
 
   if (Result.IsError(processedValidation)) return processedValidation;
 
-  // Этап 3: Цепочка создания пользователя с Flow.Pipe
+  // Step 3: User creation chain with Flow.Pipe
   const registrationResult = await Flow.Pipe.Async(processedValidation)
-    // Проверка существования пользователя
+    // Check if user exists
     (async (result) => {
       const exists = await checkUserExists(result.data.email);
       if (exists) {
@@ -1097,7 +1097,7 @@ async function processUserRegistration(userData: UserRegistrationData) {
       }
       return Result.Ok({ data: result.data, tag: 'UserCanBeCreated' });
     })
-    // Создание пользователя в базе данных
+    // Create user in database
     (async (result) => {
       const user = await Flow.Try.Async({
         try: async () => createUserInDatabase(result.data),
@@ -1108,7 +1108,7 @@ async function processUserRegistration(userData: UserRegistrationData) {
       });
       return user;
     })
-    // Отправка приветственного email
+    // Send welcome email
     (async (result) => {
       if (Result.IsOk(result)) {
         await Flow.Try.Async(() => sendWelcomeEmail(result.data.email));
@@ -1121,23 +1121,23 @@ async function processUserRegistration(userData: UserRegistrationData) {
 }
 ```
 
-## 🎯 Особенности и сравнения с аналогами
+## 🎯 Features and Comparisons with Alternatives
 
-### 📊 Общие характеристики
+### 📊 General Characteristics
 
-| Критерий | resu | Effect-TS | neverthrow | fp-ts | ts-results | purify-ts |
+| Criteria | resu | Effect-TS | neverthrow | fp-ts | ts-results | purify-ts |
 |----------|---------------|-----------|------------|-------|------------|-----------|
-| **📦 Максимальный размер бандла** | ~5KB | ~20-25KB | ~8-10KB | ~25-30KB | ~10-12KB | ~15-20KB |
+| **📦 Maximum bundle size** | ~5KB | ~20-25KB | ~8-10KB | ~25-30KB | ~10-12KB | ~15-20KB |
 | **📈 Weekly Downloads** | New | 500K+ | 896K | 4.2M+ | 105K | 40K |
-| **⚡ Статус поддержки** | ✅ Активная | ✅ Активная | ✅ Активная | ⚠️ Maintenance | ❌ Заброшена | ✅ Активная |
-| **🎯 Порог входа** | 🟢 Низкий | 🔴 Высокий | 🟢 Низкий | 🔴 Очень высокий | 🟡 Средний | 🟡 Средний |
-| **🏗️ Enterprise готовность** | 🟡 Хорошая | 🟢 Отличная | 🟡 Хорошая | 🟢 Отличная | 🔴 Плохая | 🟡 Средняя |
+| **⚡ Support status** | ✅ Active | ✅ Active | ✅ Active | ⚠️ Maintenance | ❌ Abandoned | ✅ Active |
+| **🎯 Entry barrier** | 🟢 Low | 🔴 High | 🟢 Low | 🔴 Very high | 🟡 Medium | 🟡 Medium |
+| **🏗️ Enterprise readiness** | 🟡 Good | 🟢 Excellent | 🟡 Good | 🟢 Excellent | 🔴 Poor | 🟡 Average |
 
 ---
 
-## 🎯 Специализированные возможности
+## 🎯 Specialized Features
 
-| Возможность | resu | Effect-TS | neverthrow | fp-ts | ts-results | purify-ts |
+| Feature | resu | Effect-TS | neverthrow | fp-ts | ts-results | purify-ts |
 |-------------|---------------|-----------|------------|-------|------------|-----------|
 | **🛡️ Exception handling** | ✅ Flow.Try | ✅ Built-in | ❌ Manual | ❌ Manual | ❌ Manual | ❌ Manual |
 | **🔗 Pipeline processing** | ✅ Iterable Pipes | ✅ Generators | ⚡ Chains | ✅ Pipe | ❌ Basic | ⚡ Limited |
@@ -1148,27 +1148,25 @@ async function processUserRegistration(userData: UserRegistrationData) {
 | **🧪 Testing utilities** | ⚡ Basic | ✅ Advanced | ⚡ Limited | ✅ Good | ❌ None | ⚡ Some |
 | **📊 Developer experience** | ✅ Excellent | ⚡ Good* | ✅ Excellent | ❌ Poor | ❌ Outdated | ⚡ Good |
 
-*Хорошо для опытных FP разработчиков
+*Good for experienced FP developers
 
 ---
 
-## 🎯 Рекомендации по выбору
+## 🎯 Selection Recommendations
 
-### 🚀 Новые проекты, практичный подход
-**resu** - для команд, которые ценят простоту, хотят быстро освоить Result паттерн и нуждаются в практичных фичах для production (логирование, отладка, миграция).
+### 🚀 New projects, practical approach
+**resu** - for teams that value simplicity, want to quickly master the Result pattern, and need practical features for production (logging, debugging, migration).
 
-### 🏢 Enterprise, сложная логика
-**Effect-TS** - для больших проектов с комплексной бизнес-логикой, где нужны продвинутые возможности и команда готова инвестировать в изучение.
+### 🏢 Enterprise, complex logic
+**Effect-TS** - for large projects with complex business logic where advanced capabilities are needed and the team is ready to invest in learning.
 
-### ⚡ Быстрый старт, проверенное решение
-**neverthrow** - для проектов, где нужна надежная и популярная библиотека с хорошей эргономикой без излишней сложности.
+### ⚡ Quick start, proven solution
+**neverthrow** - for projects that need a reliable and popular library with good ergonomics without excessive complexity.
 
-### 🧠 Функциональное программирование
-**fp-ts** → **Effect-TS** - для команд с опытом FP, но лучше сразу переходить на Effect-TS как официального наследника.
+### 🧠 Functional programming
+**fp-ts** → **Effect-TS** - for teams with FP experience, but better to transition directly to Effect-TS as the official successor.
 
-### ❌ Избегать
-**ts-results, oxide.ts** - заброшенные библиотеки с проблемами безопасности и совместимости.
+### ❌ Avoid
+**ts-results, oxide.ts** - abandoned libraries with security and compatibility issues.
 
 ---
-
-
