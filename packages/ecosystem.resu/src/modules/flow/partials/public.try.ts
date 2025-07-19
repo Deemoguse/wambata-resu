@@ -12,7 +12,7 @@ export namespace _Try
 	 */
 	type TryReturn<
 		Ok extends _Utils.AllowedReturn,
-		Error extends _Utils.AllowedReturn | unknown
+		Error extends unknown | _Utils.AllowedReturn = _Result.Error<unknown>
 	> =
 		| (Ok extends _Result.Any ? Ok : _Result.Ok<Ok>)
 		| (Error extends _Result.Any ? Error : _Result.Error<Error>)
@@ -35,7 +35,7 @@ export namespace _Try
 	 */
 	type SyncConfig<
 		Ok extends _Utils.AllowedReturn,
-		Error extends _Utils.AllowedReturn
+		Error extends unknown | _Utils.AllowedReturn = _Result.Error<unknown>
 	> = {
 		try: SyncFunction<Ok>
 	} | {
@@ -53,7 +53,7 @@ export namespace _Try
 	 */
 	export function Sync<
 		Ok extends _Utils.AllowedReturn,
-		Error extends _Utils.AllowedReturn
+		Error extends unknown | _Utils.AllowedReturn = _Result.Error<unknown>
 	> (
 		config: SyncConfig<Ok, Error>
 	):
@@ -70,7 +70,7 @@ export namespace _Try
 	// Signature implementation:
 	export function Sync<
 		Ok extends _Utils.AllowedReturn,
-		Error extends _Utils.AllowedReturn
+		Error extends unknown | _Utils.AllowedReturn = _Result.Error<unknown>
 	> (
 		arg: SyncFunction<Ok> | SyncConfig<Ok, Error>
 	):
@@ -112,7 +112,7 @@ export namespace _Try
 	 */
 	type AsyncConfig<
 		Ok extends _Utils.AllowedReturn,
-		Error extends _Utils.AllowedReturn
+		Error extends unknown | _Utils.AllowedReturn = _Result.Error<unknown>
 	> = {
 		try: AsyncFunction<Ok>,
 	} | {
@@ -129,7 +129,7 @@ export namespace _Try
 	 */
 	type AsyncConfigWithSignal<
 		Ok extends _Utils.AllowedReturn,
-		Error extends _Utils.AllowedReturn
+		Error extends unknown | _Utils.AllowedReturn = _Result.Error<unknown>
 	> = {
 		signal: AbortSignal
 		try: AsyncFunction<Ok, [signal: AbortSignal]>
@@ -150,7 +150,7 @@ export namespace _Try
 	 */
 	export function Async<
 		Ok extends _Utils.AllowedReturn,
-		Error extends _Utils.AllowedReturn
+		Error extends unknown | _Utils.AllowedReturn = _Result.Error<unknown>
 	> (
 		config: AsyncConfigWithSignal<Ok, Error>
 	):
@@ -166,7 +166,7 @@ export namespace _Try
 	 */
 	export function Async<
 		Ok extends _Utils.AllowedReturn,
-		Error extends _Utils.AllowedReturn
+		Error extends unknown | _Utils.AllowedReturn = _Result.Error<unknown>
 	> (
 		config: AsyncConfig<Ok, Error>
 	):
@@ -185,7 +185,7 @@ export namespace _Try
 	// Signature implementation:
 	export async function Async<
 		Ok extends _Utils.AllowedReturn,
-		Error extends _Utils.AllowedReturn
+		Error extends unknown | _Utils.AllowedReturn = _Result.Error<unknown>
 	> (
 		arg:
 			| AsyncFunction<Ok>
@@ -213,4 +213,3 @@ export namespace _Try
 		}
 	}
 }
-
