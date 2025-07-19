@@ -2,10 +2,14 @@
   "$schema": "https://turborepo.com/schema.json",
   "ui": "tui",
   "tasks": {
-    "build": {
-      "dependsOn": ["^build"],
+    "@wambata/resu#build": {
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**"]
+      "outputs": ["dist/*"]
+    },
+    "build": {
+      "dependsOn": ["@wambata/resu#build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": ["dist/*"]
     },
     "lint": {
       "dependsOn": ["^lint"]
