@@ -1,9 +1,11 @@
+import { createRequire } from 'module'
 import { defineConfig } from 'rollup'
 import { execSync } from 'child_process'
-
-import packageJson from './package.json' with { type: 'json' }
 import terser from '@rollup/plugin-terser'
 import typescript from '@rollup/plugin-typescript'
+
+const require = createRequire(import.meta.url)
+const packageJson = require('./package.json')
 
 // Generate types:
 const command = `tsc --emitDeclarationOnly --declaration --declarationDir dist/types`
