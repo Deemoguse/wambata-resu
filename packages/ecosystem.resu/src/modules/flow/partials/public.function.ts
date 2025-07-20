@@ -17,7 +17,7 @@ export namespace _Function
 	> =
 		_Result.IsResult<Return> extends true
 			? (...args: Args) => Return
-			: (...args: Args) => _Result.OkFrom<Return>
+			: (...args: Args) => _Result.OkFromUnlessError<Return>
 
 	/**
 	 * The result of the passed function will always be `Result`.
@@ -36,7 +36,7 @@ export namespace _Function
 	{
 		const wrappedFn = function (...args: Args) {
 			const maybeResult = fn(...args)
-			const result = _Result.IsResult(maybeResult) ? maybeResult : _Result.OkFrom(maybeResult)
+			const result = _Result.IsResult(maybeResult) ? maybeResult : _Result.OkFromUnlessError(maybeResult)
 			return result
 		}
 		return wrappedFn as Sync<Args, Return>
@@ -58,7 +58,7 @@ export namespace _Function
 	> =
 		_Result.IsResult<Return> extends true
 			? (...args: Args) => Promise<Return>
-			: (...args: Args) => Promise<_Result.OkFrom<Return>>
+			: (...args: Args) => Promise<_Result.OkFromUnlessError<Return>>
 
 	/**
 	 * The result of the passed function will always be `Result`.
@@ -77,7 +77,7 @@ export namespace _Function
 	{
 		const wrappedFn = async function (...args: Args) {
 			const maybeResult = await fn(...args)
-			const result = _Result.IsResult(maybeResult) ? maybeResult : _Result.OkFrom(maybeResult)
+			const result = _Result.IsResult(maybeResult) ? maybeResult : _Result.OkFromUnlessError(maybeResult)
 			return result
 		}
 		return wrappedFn as Async<Args, Return>

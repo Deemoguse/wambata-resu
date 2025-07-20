@@ -7,6 +7,7 @@ export namespace _Flow
 {
 	// Aliasing `Match` namespace:
 	export import Match = _Match.Match
+	export import MatchMap = _Match.MatchMap
 
 	// Aliasing `Try` namespace:
 	export import Try = _Try
