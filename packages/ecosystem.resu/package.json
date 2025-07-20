@@ -15,7 +15,7 @@
 	"scripts": {
 		"build": "rollup -c rollup.config.ts --configPlugin @rollup/plugin-typescript",
 		"eslint": "eslint **/*.ts --fix --color",
-		"release": "npm run build && np --no-tests",
+		"release": "npm run build && npx @changesets/cli version && npx @changesets/cli publish",
 		"types": "tsc"
 	},
 	"keywords": [
@@ -51,7 +51,6 @@
 		"@rollup/plugin-typescript": "^12.1.2",
 		"@types/node": "^22.15.30",
 		"dts-bundle-generator": "^9.5.1",
-		"np": "^10.2.0",
 		"rollup": "^4.42.0",
 		"rollup-plugin-api-extractor": "^0.2.5"
 	},
