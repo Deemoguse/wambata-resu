@@ -2,19 +2,24 @@
 	"$schema": "https://turborepo.com/schema.json",
 	"ui": "tui",
 	"tasks": {
-		"@wambata/resu#build": {
-			"inputs": ["$TURBO_DEFAULT$", ".env*"],
-			"outputs": ["dist/*"]
+		"dev": {
+			"cache": false,
+			"persistent": true
 		},
+
 		"build": {
 			"dependsOn": ["@wambata/resu#build"],
 			"inputs": ["$TURBO_DEFAULT$", ".env*"],
 			"outputs": ["dist/*"]
 		},
+		"@wambata/resu#build": {
+			"inputs": ["$TURBO_DEFAULT$", ".env*"],
+			"outputs": ["dist/*"]
+		},
 
-		"dev": {
-			"cache": false,
-			"persistent": true
+		"release": {
+			"inputs": ["$TURBO_DEFAULT$", ".env*"],
+			"outputs": ["dist/*"]
 		}
 	}
 }

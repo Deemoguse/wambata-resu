@@ -4,7 +4,7 @@
 		"build": "turbo run build",
 		"dev": "turbo run dev",
 		"turbo": "turbo",
-		"release": "turbo run release"
+		"release": "turbo run build && bunx @changesets/cli version && bunx @changesets/cli publish"
 	},
 	"devDependencies": {
 		"prettier": "^3.6.2",

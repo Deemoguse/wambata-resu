@@ -17,9 +17,9 @@
 		"./README.md"
 	],
 	"scripts": {
-		"build": "vite build",
+		"build": "bunx --bun vite build",
 		"eslint": "eslint **/*.ts --fix --color",
-		"release": "npm run build && np --no-tests"
+		"release": "bun run build && np --no-tests"
 	},
 	"keywords": [
 		"vue",
@@ -59,7 +59,7 @@
 		"vue-tsc": "^3.0.2"
 	},
 	"peerDependencies": {
-		"@wambata/resu": "^0.1.3",
+		"@wambata/resu": "workspace:*",
 		"vue": "^3.5.17"
 	},
 	"publishConfig": {
