@@ -24,7 +24,7 @@ describe('Result Pattern - Ok and Error Functions', () => {
 			expect(res[symbol]).toBeSymbol()
 		})
 
-		test('Passes the data and tag. `Falsy` values, except for `undefined` and `void`, should not be converted to `null`', () => {
+		test('Passes data and a tag. `Falsy` values for `data`, except for `undefined` and `void`, should not be converted to `null`', () => {
 			const data = { code: 100 }
 
 			const res1 = method({ data, tag: 'SomeTag' })
@@ -35,33 +35,27 @@ describe('Result Pattern - Ok and Error Functions', () => {
 
 			const res2 = method({ data, tag: '' })
 			expect(res2.status).toBe(status)
-			expect(res2.tag).not.toBeNull()
+			expect(res2.tag).toBeNull()
 			expect(res2.data).toBe(data)
 			expect(res2[symbol]).toBeSymbol()
 
-			const res3 = method({ data: 0 })
-			expect(res3.status).toBe(status)
-			expect(res3.tag).toBeNull()
-			expect(res3.data).not.toBeNull()
-			expect(res3[symbol]).toBeSymbol()
+			const positiveFalsy = [ 0, '', false, null ]
+			positiveFalsy.forEach((data) => {
+				const res = method({ data })
+				expect(res.status).toBe(status)
+				expect(res.tag).toBeNull()
+				expect(res.data).not.toBeNull()
+				expect(res[symbol]).toBeSymbol()
+			})
 
-			const res5 = method({ data: '' })
-			expect(res5.status).toBe(status)
-			expect(res5.tag).toBeNull()
-			expect(res5.data).not.toBeNull()
-			expect(res5[symbol]).toBeSymbol()
-
-			const res6 = method({ data: undefined })
-			expect(res6.status).toBe(status)
-			expect(res6.tag).toBeNull()
-			expect(res6.data).toBeNull()
-			expect(res6[symbol]).toBeSymbol()
-
-			const res7 = method({ data: void(0) })
-			expect(res7.status).toBe(status)
-			expect(res7.tag).toBeNull()
-			expect(res7.data).toBeNull()
-			expect(res7[symbol]).toBeSymbol()
+			const negativeFalsy = [ undefined, void(0) ]
+			negativeFalsy.forEach((data) => {
+				const res = method({ data })
+				expect(res.status).toBe(status)
+				expect(res.tag).toBeNull()
+				expect(res.data).toBeNull()
+				expect(res[symbol]).toBeSymbol()
+			})
 		})
 	})
 })
