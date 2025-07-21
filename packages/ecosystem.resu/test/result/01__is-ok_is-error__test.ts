@@ -2,7 +2,7 @@ import { describe, test, expect } from 'bun:test';
 import { _Ok } from '../../src/modules/result/partials/public.ok'
 import { _Error } from '../../src/modules/result/partials/public.error';
 
-describe('Result Pattern - IsOk and IsError Functions', () => {
+describe('IsOk and IsError Functions', () => {
 
 	const cases = <const>[
 		[
@@ -21,7 +21,7 @@ describe('Result Pattern - IsOk and IsError Functions', () => {
 			expect(identificationMethod(res)).toBeTrue()
 
 			const otherDataTypes = [
-				true, false, null, undefined, void(0),
+				true, false, null, undefined, void 0,
 				1, 1.0, 1n,
 				'string',
 				[], {}, class {}, new class {}, function () {},

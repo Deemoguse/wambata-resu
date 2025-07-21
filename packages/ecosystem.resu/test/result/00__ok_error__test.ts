@@ -2,7 +2,7 @@ import { describe, test, expect } from 'bun:test';
 import { _Ok } from '../../src/modules/result/partials/public.ok'
 import { _Error } from '../../src/modules/result/partials/public.error';
 
-describe('Result Pattern - Ok and Error Functions', () => {
+describe('Ok and Error Functions', () => {
 
 	const cases = <const>[
 		[
