@@ -1,13 +1,16 @@
 {
 	"$schema": "https://turborepo.com/schema.json",
 	"ui": "tui",
+
 	"tasks": {
 		"@wambata/resu#build": {
+			"dependsOn": ["test", "^test", "^build"],
 			"inputs": ["$TURBO_DEFAULT$", ".env*"],
 			"outputs": ["dist/*"]
 		},
+
 		"build": {
-			"dependsOn": ["@wambata/resu#build"],
+			"dependsOn": ["test", "^test", "^build"],
 			"inputs": ["$TURBO_DEFAULT$", ".env*"],
 			"outputs": ["dist/*"]
 		},
