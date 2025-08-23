@@ -29,7 +29,7 @@ describe('Sync and Async in Flow.Function', () => {
 		})
 	})
 
-	test('Flow.Function.Async.The function always returns a Promise. Non-results are always returned as `Result.Ok`, any results are returned as is', async () => {
+	test('Flow.Function.Async. The function always returns a Promise. Non-results are always returned as `Result.Ok`, any results are returned as is', async () => {
 		anyData.forEach(async (data) => {
 			const asyncFn = _Function.Async(async () => data)
 			const asyncFnRes = asyncFn()
