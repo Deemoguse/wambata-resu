@@ -11,7 +11,6 @@ describe('OkFromUnlessError and ErrorFromUnlessOk Functions', () => {
 				status: 'ok',
 				transformMethod: _Ok.OkFromUnlessError,
 				creatingResultMethod: _Ok.Ok,
-				creatingOppositeResultMethod: _Error.Error,
 				symbol: _Ok.OK_SYMBOL
 			}
 		],
@@ -21,13 +20,12 @@ describe('OkFromUnlessError and ErrorFromUnlessOk Functions', () => {
 				status: 'error',
 				transformMethod: _Error.ErrorFromUnlessOk,
 				creatingResultMethod: _Error.Error,
-				creatingOppositeResultMethod: _Ok.Ok,
 				symbol: _Error.ERROR_SYMBOL
 			}
 		],
 	]
 
-	describe.each(cases)('%s', (_, { status, transformMethod, creatingResultMethod, creatingOppositeResultMethod, symbol }) => {
+	describe.each(cases)('%s', (_, { status, transformMethod, creatingResultMethod, symbol }) => {
 		test('Non-results are converted to a result with an optional tag', () => {
 			const anyData = [1, 'string', { code: 200 }]
 			anyData.forEach((data) => {
