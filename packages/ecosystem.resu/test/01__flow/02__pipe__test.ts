@@ -4,15 +4,6 @@ import { _Result } from '../../src/modules/result'
 import { _Ok } from '../../src/modules/result/partials/public.ok'
 import { _Error } from '../../src/modules/result/partials/public.error'
 
-// ЧЕКЛИСТ:
-// - [X] Pipe создает цепочку дествий без вызова.
-// - [X] Результат Pipe это всегда `Result`.
-// - [X] Pipe корректно обрабатывает цепечку действий.
-// - [X] Pipe не сохраняет результат предыдущего вызовы в внутреннем состоянии.
-// - [X] Pipe завершает цепочку выполнений и возвращает результат, если одно из действий вернуло `Result.Error`.
-// - [X] Pipe итерируется с помощью `for of`.
-// - [X] Итерация Pipe прерывается если одно из действий вернет `Result.Error`. Последний `Result.Error` должен вернуться как значение.
-
 // CHECKLIST:
 // - [X] Pipe creates a chain of actions without calling.
 // - [X] The result of Pipe is always a `Result`.
