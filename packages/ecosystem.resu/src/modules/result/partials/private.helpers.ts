@@ -67,13 +67,11 @@ export namespace _Helpers
 		):
 			ResultConstructor<S, D, T>
 		{
-			const falsyValues = [undefined, null, void 0]
-
-			const dataIsFalsy = falsyValues.includes(params.data as any)
+			const dataIsFalsy = [undefined, null, void 0].includes(params.data as any)
 			if (dataIsFalsy) params.data = null as D
 
-			const tagIsFalsy = falsyValues.includes(params.tag as any)
-			if (tagIsFalsy) params.tag = null as T
+			// tagIsFalsy:
+			params.tag ||= null as T
 
 			return { ...params, [symbol]: symbol }
 		}
