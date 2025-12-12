@@ -46,9 +46,37 @@ export namespace _Helpers
 		> =
 			| _Utils.Prettify<{
 				status: S
-				tag: T
-				data: D
+				tag?: T
+				data?: D
 			}>
+
+		/**
+		 * A utilitarian type for creating a new result type.
+		 *
+		 * @template S Status describing the result.
+		 * @template D Optional data.
+		 * @template T Optional tag.
+		 */
+		export function ResultConstructor <
+			S extends string = string,
+			D extends SomeData = null,
+			const T extends SomeTag = null,
+		> (
+			symbol: symbol,
+			params: ResultConstructor<S, D, T>
+		):
+			ResultConstructor<S, D, T>
+		{
+			const falsyValues = [undefined, null, void 0]
+
+			const dataIsFalsy = falsyValues.includes(params.data as any)
+			if (dataIsFalsy) params.data = null as D
+
+			const tagIsFalsy = falsyValues.includes(params.tag as any)
+			if (tagIsFalsy) params.tag = null as T
+
+			return { ...params, [symbol]: symbol }
+		}
 
 		/**
 		 * Create a new result from the passed value. If the passed value

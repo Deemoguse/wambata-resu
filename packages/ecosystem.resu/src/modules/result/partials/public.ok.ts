@@ -34,12 +34,7 @@ export namespace _Ok
 	):
 		Ok<Data, Tag>
 	{
-		const result = {
-			status: 'ok' as const,
-			data: (params?.data || null) as Data,
-			tag: (params?.tag || null) as Tag,
-			[OK_SYMBOL]: OK_SYMBOL,
-		}
+		const result = _Helpers.Result.ResultConstructor(OK_SYMBOL, { status: 'ok', ...params })
 
 		const logAllowed = params?.log ?? _Logger.LogOkResult
 		if (logAllowed && _Logger.Engine) _Logger.Engine!(result)

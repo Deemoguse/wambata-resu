@@ -34,12 +34,7 @@ export namespace _Error
 	):
 		Error<D, T>
 	{
-		const result = {
-			status: 'error' as const,
-			data: (params?.data || null) as D,
-			tag: (params?.tag || null) as T,
-			[ERROR_SYMBOL]: ERROR_SYMBOL,
-		}
+		const result = _Helpers.Result.ResultConstructor(ERROR_SYMBOL, { status: 'error', ...params })
 
 		const logAllowed = params?.log ?? _Logger.LogErrorResult
 		if (logAllowed && _Logger.Engine) _Logger.Engine!(result)

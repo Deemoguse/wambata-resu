@@ -52,10 +52,14 @@
 		"access": "public"
 	},
 	"scripts": {
+		"dev": "nodemon --exec bun run build --watch src",
 		"build": "rollup -c rollup.config.ts --configPlugin @rollup/plugin-typescript",
 		"test": "bun test ./test",
 		"release": "npm run build && npx @changesets/cli version && npx @changesets/cli publish",
 		"types": "tsc"
 	},
-	"types": "dist/types/index.d.ts"
+	"types": "dist/types/index.d.ts",
+	"dependencies": {
+		"nodemon": "^3.1.10"
+	}
 }
