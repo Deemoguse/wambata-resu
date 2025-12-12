@@ -11,28 +11,28 @@ export namespace _Ok
 	/**
 	 * Create new result with success.
 	 *
-	 * @template Data Optional success data.
-	 * @template Tag Optional success tag.
+	 * @template D Optional success data.
+	 * @template Y Optional success tag.
 	 */
 	export type Ok<
-		Data extends _Helpers.Result.SomeData = null,
-		Tag extends _Helpers.Result.SomeTag = null,
+		D extends _Helpers.Result.SomeData = null,
+		Y extends _Helpers.Result.SomeTag = null,
 	> =
-		| _Helpers.Result.ResultConstructor<'ok', Data, Tag>
+		| _Helpers.Result.ResultConstructor<'ok', D, Y>
 
 	/**
 	 * Create new result with success.
 	 *
-	 * @template Data Optional success data.
-	 * @template Tag Optional success tag.
+	 * @template D Optional success data.
+	 * @template T Optional success tag.
 	 */
 	export function Ok<
-		Data extends _Helpers.Result.SomeData = null,
-		const Tag extends _Helpers.Result.SomeTag = null,
+		D extends _Helpers.Result.SomeData = null,
+		const T extends _Helpers.Result.SomeTag = null,
 	> (
-		params?: _Helpers.Result.Params<Data, Tag>
+		params?: _Helpers.Result.Params<D, T>
 	):
-		Ok<Data, Tag>
+		Ok<D, T>
 	{
 		const result = _Helpers.Result.ResultConstructor(OK_SYMBOL, { status: 'ok', ...params })
 
@@ -47,10 +47,10 @@ export namespace _Ok
 	/**
 	 * Check if the value is a success result.
 	 *
-	 * @template Value Source value.
+	 * @template V Source value.
 	 */
-	export type IsOk<Value> =
-		| Value extends Ok<any, any> ? true : false
+	export type IsOk<V> =
+		| V extends Ok<any, any> ? true : false
 
 	/**
 	 * Check if the value is a success result.
@@ -72,14 +72,14 @@ export namespace _Ok
 	 * is already a result, then its `status` and `tag` will be overwritten
 	 * with new ones.
 	 *
-	 * @template Value Source value.
-	 * @template Tag Optional tag.
+	 * @template V Source value.
+	 * @template T Optional tag.
 	 */
 	export type OkFrom<
-		Value extends _Helpers.Result.SomeData = null,
-		Tag extends _Helpers.Result.SomeTag = null,
+		V extends _Helpers.Result.SomeData = null,
+		T extends _Helpers.Result.SomeTag = null,
 	> =
-		| _Helpers.Result.ResultFrom<'ok', Value, Tag>
+		| _Helpers.Result.ResultFrom<'ok', V, T>
 
 	/**
 	 * Create a new success result from the passed value. If the passed value
@@ -90,19 +90,21 @@ export namespace _Ok
 	 * @param tag - Optional tag.
 	 */
 	export function OkFrom<
-		Value extends _Helpers.Result.SomeData = null,
-		const Tag extends _Helpers.Result.SomeTag = null,
+		D extends _Helpers.Result.SomeData = null,
+		const T extends _Helpers.Result.SomeTag = null,
 	> (
-		value: Value,
-		tag?: Tag
+		data: D,
+		tag?: T
 	):
-		OkFrom<Value, Tag>
+		OkFrom<D, T>
 	{
-		const result = IsOk(value)
-			? Ok({ ...value, tag: tag || value.tag })
-			: Ok({ data: value, tag })
+		const isOk = IsOk(data)
+		if (isOk) return Ok({ ...data, tag: tag !== undefined ? tag : data.tag }) as OkFrom<D, T>
 
-		return result as OkFrom<Value, Tag>
+		const isError = _Error.IsError(data)
+		if (isError) return Ok({ data: data.data, tag: tag !== undefined ? tag : data.tag }) as OkFrom<D, T>
+
+		return Ok({ data, tag }) as OkFrom<D, T>
 	}
 
 	// ---------------------------------------------------------------------
@@ -112,14 +114,14 @@ export namespace _Ok
 	 * of `Result.Error`. If the passed value is already a `Result.Ok`,
 	 * then the `tag` will be replaced with a new one.
 	 *
-	 * @template Value Source value.
-	 * @template Tag Optional tag.
+	 * @template D Source value.
+	 * @template T Optional tag.
 	 */
 	export type OkFromUnlessError<
-		Value extends _Helpers.Result.SomeData = null,
-		Tag extends _Helpers.Result.SomeTag = null
+		D extends _Helpers.Result.SomeData = null,
+		T extends _Helpers.Result.SomeTag = null
 	> =
-		| Value extends { status: 'error' } ? Value : OkFrom<Value, Tag>
+		| D extends { status: 'error' } ? D : OkFrom<D, T>
 
 	/**
 	 * Create a new `Result.Ok` from the result if it is not an instance
@@ -130,16 +132,16 @@ export namespace _Ok
 	 * @param tag - Optional tag.
 	 */
 	export function OkFromUnlessError<
-		Value extends _Helpers.Result.SomeData = null,
-		Tag extends _Helpers.Result.SomeTag = null,
+		V extends _Helpers.Result.SomeData = null,
+		T extends _Helpers.Result.SomeTag = null,
 	> (
-		value: Value,
-		tag?: Tag
+		value: V,
+		tag?: T
 	):
-		OkFromUnlessError<Value, Tag>
+		OkFromUnlessError<V, T>
 	{
 		const result = _Error.IsError(value) ? value : OkFrom(value, tag)
-		return result as OkFromUnlessError<Value, Tag>
+		return result as OkFromUnlessError<V, T>
 	}
 
 	// ---------------------------------------------------------------------

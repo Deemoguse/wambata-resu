@@ -86,23 +86,25 @@ export namespace _Error
 	 * is already a result, then its `status` and `tag` will be overwritten
 	 * with new ones.
 	 *
-	 * @param value - Source value.
+	 * @param data - Source value.
 	 * @param tag - Optional tag.
 	 */
 	export function ErrorFrom<
-		V extends _Helpers.Result.SomeData = null,
+		D extends _Helpers.Result.SomeData = null,
 		const T extends _Helpers.Result.SomeTag = null,
 	> (
-		value: V,
+		data: D,
 		tag?: T
 	):
-		ErrorFrom<V, T>
+		ErrorFrom<D, T>
 	{
-		const result = IsError(value)
-			? Error({ ...value, tag: tag || value.tag })
-			: Error({ data: value, tag })
+		const isError = IsError(data)
+		if (isError) return Error({ ...data, tag: tag !== undefined ? tag : data.tag }) as ErrorFrom<D, T>
 
-		return result as ErrorFrom<V, T>
+		const IsOk = _Ok.IsOk(data)
+		if (IsOk) return Error({ data: data.data, tag: tag !== undefined ? tag : data.tag }) as ErrorFrom<D, T>
+
+		return Error({ data, tag }) as ErrorFrom<D, T>
 	}
 
 	// ---------------------------------------------------------------------
@@ -112,34 +114,34 @@ export namespace _Error
 	 * of `Result.Ok`. If the passed value is already a `Result.Error`,
 	 * then the `tag` will be replaced with a new one.
 	 *
-	 * @template Value Source value.
-	 * @template Tag Optional tag.
+	 * @template V Source value.
+	 * @template T Optional tag.
 	 */
 	export type ErrorFromUnlessOk<
-		Value extends _Helpers.Result.SomeData = null,
-		Tag extends _Helpers.Result.SomeTag = null
+		V extends _Helpers.Result.SomeData = null,
+		T extends _Helpers.Result.SomeTag = null
 	> =
-		| Value extends { status: 'ok' } ? Value : ErrorFrom<Value, Tag>
+		| V extends { status: 'ok' } ? V : ErrorFrom<V, T>
 
 	/**
 	 * Create a new `Result.Error` from the result if it is not an instance
 	 * of `Result.Ok`. If the passed value is already a `Result.Error`,
 	 * then the `tag` will be replaced with a new one.
 	 *
-	 * @param value - Source value.
+	 * @param data - Source value.
 	 * @param tag - Optional tag.
 	 */
 	export function ErrorFromUnlessOk<
-		Value extends _Helpers.Result.SomeData = null,
-		Tag extends _Helpers.Result.SomeTag = null,
+		D extends _Helpers.Result.SomeData = null,
+		const T extends _Helpers.Result.SomeTag = null,
 	> (
-		value: Value,
-		tag?: Tag
+		data: D,
+		tag?: T
 	):
-		ErrorFromUnlessOk<Value, Tag>
+		ErrorFromUnlessOk<D, T>
 	{
-		const result = _Ok.IsOk(value) ? value : ErrorFrom(value, tag)
-		return result as ErrorFromUnlessOk<Value, Tag>
+		const result = _Ok.IsOk(data) ? data : ErrorFrom(data, tag)
+		return result as ErrorFromUnlessOk<D, T>
 	}
 
 	// ---------------------------------------------------------------------

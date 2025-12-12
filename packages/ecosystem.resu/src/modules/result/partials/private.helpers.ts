@@ -46,8 +46,8 @@ export namespace _Helpers
 		> =
 			| _Utils.Prettify<{
 				status: S
-				tag?: T
-				data?: D
+				data: D
+				tag: T
 			}>
 
 		/**
@@ -62,8 +62,8 @@ export namespace _Helpers
 			D extends SomeData = null,
 			const T extends SomeTag = null,
 		> (
-			symbol: symbol,
-			params: ResultConstructor<S, D, T>
+			sign: symbol,
+			params: { status: S } & Partial<ResultConstructor<S, D, T>>
 		):
 			ResultConstructor<S, D, T>
 		{
@@ -73,7 +73,7 @@ export namespace _Helpers
 			// tagIsFalsy:
 			params.tag ||= null as T
 
-			return { ...params, [symbol]: symbol }
+			return { ...params, [sign]: sign } as ResultConstructor<S, D, T>
 		}
 
 		/**
@@ -82,16 +82,16 @@ export namespace _Helpers
 		 * with new ones.
 		 *
 		 * @template S Status describing the result.
-		 * @template V Source value.
+		 * @template D Source value.
 		 * @template T Optional tag.
 		 */
 		export type ResultFrom<
 			S extends string = string,
-			V extends SomeData = null,
+			D extends SomeData = null,
 			T extends SomeTag = null,
 		> =
-			| V extends ResultConstructor<string, infer Data, infer Tag>
-				? ResultConstructor<S, Data, T extends null ? Tag : T>
-				: ResultConstructor<S, V, T>
+			| D extends ResultConstructor<string, infer D1, infer T1>
+				? ResultConstructor<S, D1, T extends null ? T1 : T>
+				: ResultConstructor<S, D, T>
 	}
 }
