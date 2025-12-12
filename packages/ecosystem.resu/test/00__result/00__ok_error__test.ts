@@ -21,6 +21,7 @@ describe('Ok and Error Functions', () => {
 			expect(res.status).toBe(status)
 			expect(res.tag).toBeNull()
 			expect(res.data).toBeNull()
+			//@ts-expect-error
 			expect(res[symbol]).toBeSymbol()
 		})
 
@@ -31,29 +32,33 @@ describe('Ok and Error Functions', () => {
 			expect(res1.status).toBe(status)
 			expect(res1.tag).toBe('SomeTag')
 			expect(res1.data).toBe(data)
+			//@ts-expect-error
 			expect(res1[symbol]).toBeSymbol()
 
 			const res2 = method({ data, tag: '' })
 			expect(res2.status).toBe(status)
 			expect(res2.tag).toBeNull()
 			expect(res2.data).toBe(data)
+			//@ts-expect-error
 			expect(res2[symbol]).toBeSymbol()
 
-			const positiveFalsy = [ 0, '', false, null ]
+			const positiveFalsy = [ 0, '', false ]
 			positiveFalsy.forEach((data) => {
 				const res = method({ data })
 				expect(res.status).toBe(status)
 				expect(res.tag).toBeNull()
 				expect(res.data).not.toBeNull()
+				//@ts-expect-error
 				expect(res[symbol]).toBeSymbol()
 			})
 
-			const negativeFalsy = [ undefined, void(0) ]
+			const negativeFalsy = [ null, undefined, void(0) ]
 			negativeFalsy.forEach((data) => {
 				const res = method({ data })
 				expect(res.status).toBe(status)
 				expect(res.tag).toBeNull()
 				expect(res.data).toBeNull()
+				//@ts-expect-error
 				expect(res[symbol]).toBeSymbol()
 			})
 		})

@@ -23,12 +23,14 @@ describe('OkFrom and ErrorFrom Functions', () => {
 				expect(res1.status).toBe(status)
 				expect(res1.tag).toBeNull()
 				expect(res1.data).toBe(data)
+				//@ts-expect-error
 				expect(res1[symbol]).toBeSymbol()
 
 				const res2 = transformMethod(data, 'SomeTag')
 				expect(res2.status).toBe(status)
 				expect(res2.tag).toBe('SomeTag')
 				expect(res2.data).toBe(data)
+				//@ts-expect-error
 				expect(res2[symbol]).toBeSymbol()
 			})
 		})
@@ -41,12 +43,14 @@ describe('OkFrom and ErrorFrom Functions', () => {
 				expect(res1.status).toBe(status)
 				expect(res1.tag).toBeNull()
 				expect(res1.data).toBe(data)
+				//@ts-expect-error
 				expect(res1[symbol]).toBeSymbol()
 
 				const res2 = transformMethod(el, 'SomeTag')
 				expect(res2.status).toBe(status)
 				expect(res2.tag).toBe('SomeTag')
 				expect(res2.data).toBe(data)
+				//@ts-expect-error
 				expect(res2[symbol]).toBeSymbol()
 			})
 		})
