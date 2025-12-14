@@ -55,7 +55,7 @@
 		"dev": "nodemon --exec bun run build --watch src",
 		"build": "rollup -c rollup.config.ts --configPlugin @rollup/plugin-typescript",
 		"test": "bun test ./test",
-		"release": "npm run build && npx @changesets/cli version && npx @changesets/cli publish",
+		"release": "npm run build && changeset version && changeset publish",
 		"types": "tsc"
 	},
 	"types": "dist/types/index.d.ts",

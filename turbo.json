@@ -15,6 +15,12 @@
 			"outputs": ["dist/*"]
 		},
 
+		"release": {
+			"dependsOn": ["^release"],
+			"inputs": ["$TURBO_DEFAULT$", ".env*"],
+			"outputs": ["dist/*"]
+		},
+
 		"dev": {
 			"cache": false,
 			"persistent": true

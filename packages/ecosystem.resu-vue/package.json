@@ -20,7 +20,7 @@
 	"scripts": {
 		"build": "vite build",
 		"eslint": "eslint **/*.ts --fix --color",
-		"release": "npm run build && np --no-tests"
+		"release": "npm run build && changeset version && changeset publish"
 	},
 	"keywords": [
 		"vue",
