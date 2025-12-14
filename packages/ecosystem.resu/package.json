@@ -1,6 +1,6 @@
 {
 	"name": "@wambata/resu",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"author": "Ruslan Radionov <cugune.tyan@gmail.com>",
 	"repository": {
 		"type": "git",
@@ -55,7 +55,6 @@
 		"dev": "nodemon --exec bun run build --watch src",
 		"build": "rollup -c rollup.config.ts --configPlugin @rollup/plugin-typescript",
 		"test": "bun test ./test",
-		"release": "npm run build && changeset version && changeset publish",
 		"types": "tsc"
 	},
 	"types": "dist/types/index.d.ts",

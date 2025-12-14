@@ -5,7 +5,8 @@
 		"dev": "turbo run dev",
 		"test": "turbo run test",
 		"turbo": "turbo",
-		"release": "turbo run release"
+		"release": "turbo run release",
+		"changeset": "changeset"
 	},
 	"devDependencies": {
 		"@changesets/cli": "^2.29.8",

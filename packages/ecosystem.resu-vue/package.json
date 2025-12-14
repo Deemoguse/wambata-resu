@@ -19,8 +19,7 @@
 	],
 	"scripts": {
 		"build": "vite build",
-		"eslint": "eslint **/*.ts --fix --color",
-		"release": "npm run build && changeset version && changeset publish"
+		"eslint": "eslint **/*.ts --fix --color"
 	},
 	"keywords": [
 		"vue",
