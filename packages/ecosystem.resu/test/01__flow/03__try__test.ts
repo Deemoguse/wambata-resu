@@ -144,4 +144,20 @@ describe('Try (Error Interception)', () => {
 		expect(res.data).toBeInstanceOf(_Try.AbortOperationError)
 		expect(res.tag).toBe('AbortOperation')
 	})
+
+	test('`Try.Async` correctly handles `abort` if ABORTED `signal` is passed', async () => {
+		const ctrl = new AbortController()
+				ctrl.abort()
+
+		const res = await _Try.Async({
+			signal: ctrl.signal,
+			try: () => new Promise<1>((res) => {
+				setTimeout(() => res(1), 10_000)
+			})
+		})
+
+		expect(_Result.IsError(res)).toBeTrue()
+		expect(res.data).toBeInstanceOf(_Try.AbortOperationError)
+		expect(res.tag).toBe('AbortOperation')
+	})
 })

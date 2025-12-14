@@ -218,10 +218,9 @@ export namespace _Try
 		try {
 			const tryPromise = tryFunc()
 			const abortPromise = !signal ? null : new Promise((_, rej) => {
-				signal.addEventListener('abort', () => rej(_Result.Error({
-					data: new AbortOperationError(),
-					tag: ABORT_OPERATION_NAME,
-				})), { once: true })
+				signal.addEventListener('abort', () => {
+					rej(new AbortOperationError())
+				}, { once: true })
 			})
 
 			// Гонка между выполнением и отменой:
@@ -234,16 +233,7 @@ export namespace _Try
 		}
 		catch (error) {
 			const isAbortedOperation = error instanceof Error && error.name === ABORT_OPERATION_NAME
-			if (isAbortedOperation) {
-				console.log('-'.repeat(12))
-				console.log('-'.repeat(12))
-				console.log('-'.repeat(12))
-				console.log(_Result.ErrorFrom(error, ABORT_OPERATION_NAME) as any as AbortOperationResult)
-				console.log('-'.repeat(12))
-				console.log('-'.repeat(12))
-				console.log('-'.repeat(12))
-				return _Result.ErrorFrom(error, ABORT_OPERATION_NAME) as any as AbortOperationResult
-			}
+			if (isAbortedOperation) return _Result.ErrorFrom(error, ABORT_OPERATION_NAME) as any as AbortOperationResult
 
 			const catchFuncResult = catchFunc(error)
 			const result = _Result.IsResult(catchFuncResult)
