@@ -95,7 +95,7 @@ describe('Try (Error Interception)', () => {
 			try: () => { throw null },
 			catch: () => 1
 		})
-		expect(_Result.IsOk(syncRes)).toBeTrue()
+		expect(_Result.IsError(syncRes)).toBeTrue()
 		expect(syncRes.status).toBe('error')
 		expect(syncRes.tag).toBeNull()
 		expect(syncRes.data).toBe(1)
@@ -105,7 +105,7 @@ describe('Try (Error Interception)', () => {
 			catch: () => 1
 		})
 		expect(asyncRes).toBeInstanceOf(Promise)
-		expect(_Result.IsOk(await asyncRes)).toBeTrue()
+		expect(_Result.IsError(await asyncRes)).toBeTrue()
 		expect((await asyncRes).status).toBe('error')
 		expect((await asyncRes).tag).toBeNull()
 		expect((await asyncRes).data).toBe(1)
@@ -116,33 +116,32 @@ describe('Try (Error Interception)', () => {
 			try: () => { throw null },
 			catch: () => errorRes
 		})
-		expect(_Result.IsOk(syncRes)).toBeTrue()
+		expect(_Result.IsError(syncRes)).toBeTrue()
 		expect(syncRes).toBe(errorRes)
 
 		const asyncRes = _Try.Async({
 			try: async () => { throw null },
 			catch: () => errorRes
+
 		})
 		expect(asyncRes).toBeInstanceOf(Promise)
-		expect(_Result.IsOk(await asyncRes)).toBeTrue()
+		expect(_Result.IsError(await asyncRes)).toBeTrue()
 		expect(await asyncRes).toBe(errorRes)
 	})
 
 	test('`Try.Async` correctly handles `abort` if `signal` is passed', async () => {
 		const ctrl = new AbortController()
-		setTimeout(() => ctrl.abort(), 5_000)
+		setTimeout(() => ctrl.abort(), 1_000)
 
 		const res = await _Try.Async({
 			signal: ctrl.signal,
-			try: (signal) => new Promise<1>((res, rej) => {
+			try: () => new Promise<1>((res) => {
 				setTimeout(() => res(1), 10_000)
-				signal.addEventListener('abort', () => rej(1))
-			}),
-			catch: () => errorRes,
+			})
 		})
 
 		expect(_Result.IsError(res)).toBeTrue()
-		expect(res.data).toBe(1)
-		expect(res.tag).toBe('AbortError')
+		expect(res.data).toBeInstanceOf(_Try.AbortOperationError)
+		expect(res.tag).toBe('AbortOperation')
 	})
 })
