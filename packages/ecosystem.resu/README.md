@@ -1,13 +1,3 @@
-# ❗WARNING❗
-
-The library is in WIP status and contains various bugs incompatible with production environment.
-
-> ⌛ Bugs will be fixed very soon
-
-- - -
-
-<br><br>
-
 # Resu 📦
 
 **Lightweight result management system for TypeScript with maximum compatibility and zero overhead.**
