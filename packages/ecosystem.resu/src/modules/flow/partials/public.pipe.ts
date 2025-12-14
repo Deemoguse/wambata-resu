@@ -66,7 +66,7 @@ export namespace _Pipe
 		(): _Result.OkFrom<PrevResult> | PrevErrorResult
 
 		// Running chaining methods using a loop:
-		[Symbol.iterator] (): Generator<PrevResultTuple[number], PrevResultTuple, PrevResultTuple[number]>
+		[Symbol.iterator] (): Generator<PrevResultTuple[number], PrevResultTuple, void>
 	}
 
 	/**
@@ -143,7 +143,7 @@ export namespace _Pipe
 				const result = transformer(lastResult)
 
 				const resultIsError = _Result.IsError(result)
-				if (resultIsError) return results
+				if (resultIsError) return (results.push(yield result), results)
 
 				const resultAsOk = _Result.OkFrom(result) as _Result.Any
 				results.push(yield lastResult = resultAsOk)
@@ -200,7 +200,7 @@ export namespace _Pipe
 		(): Promise<_Result.OkFrom<PrevResult> | PrevErrorResult>
 
 		// Running chaining methods using a loop:
-		[Symbol.asyncIterator] (): AsyncGenerator<PrevResultTuple[number], PrevResultTuple, PrevResultTuple[number]>
+		[Symbol.asyncIterator] (): AsyncGenerator<PrevResultTuple[number], PrevResultTuple, void>
 	}
 
 	/**
@@ -243,33 +243,33 @@ export namespace _Pipe
 		const transformers: Array<(res: _Result.Any) => _Utils.AllowedReturn | Promise<_Utils.AllowedReturn>> = []
 
 		// Замкнутая функция которая будет вызывать цепочку, или обновлять ее:
-		const next = async (transformer?: (res?: _Result.Any) => typeof transformers[number]) => {
+		const next = (transformer?: (res?: _Result.Any) => typeof transformers[number]) => {
 			// Обновляем цепочку действий, если передали аргумент:
 			if (transformer) {
 				transformers.push(transformer)
 				return next
 			}
 			// Выполнение цепочки действий, если при вызове небыло передано аргумента:
-			else {
+			else return new Promise(async (res) => {
 				// Начальное значение:
 				let lastResult = await asyncUnwrapResult(result)
 
 				// Проверка начального значения:
 				const lastResultIsError = _Result.IsError(lastResult)
-				if (lastResultIsError) return lastResult
+				if (lastResultIsError) return res(lastResult)
 
 				// Итерируем шаги цепочки и формируем финальный результат:
-				for await (const transformer of transformers) {
+				for (const transformer of transformers) {
 					const result = await transformer(lastResult)
 
 					const resultIsError = _Result.IsError(result)
-					if (resultIsError) return result
+					if (resultIsError) return res(result)
 
 					const resultAsOk = _Result.OkFrom(result)
 					lastResult = resultAsOk
 				}
-				return lastResult
-			}
+				return res(lastResult)
+			})
 		}
 
 		// Генератор для итерации шагов трансформаций:
@@ -286,7 +286,7 @@ export namespace _Pipe
 			for await (const transformer of transformers) {
 				const result = await transformer(lastResult)
 				const resultIsError = _Result.IsError(result)
-				if (resultIsError) return results
+				if (resultIsError) return (results.push(yield result), results)
 
 				const resultAsOk = _Result.OkFrom(result) as _Result.Any
 				results.push(yield lastResult = resultAsOk)
