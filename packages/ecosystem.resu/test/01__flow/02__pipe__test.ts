@@ -68,6 +68,7 @@ describe('Pipe (Processing along the chain)', () => {
 		const syncPipe = _Pipe.Sync(1)
 			(x => _Result.OkFrom(x.data * 2))
 			(_ => _Result.Error({ tag: 'Error' }))
+			// @ts-ignore
 			((x: any) => x.data * 2)
 
 		const syncPipeRes = syncPipe()
@@ -77,6 +78,7 @@ describe('Pipe (Processing along the chain)', () => {
 		const asyncPipe = _Pipe.Async(1)
 			(x => _Result.OkFrom(x.data * 2))
 			(_ => _Result.Error({ tag: 'Error' }))
+			// @ts-ignore
 			((x: any) => x.data * 2)
 
 		const asyncPipeRes = asyncPipe()
@@ -84,7 +86,6 @@ describe('Pipe (Processing along the chain)', () => {
 		expect(_Result.IsError(await asyncPipeRes)).toBeTrue()
 		expect((await asyncPipeRes).tag).toBe('Error')
 	})
-
 
 	test('Pipe can be iterated using `for of`', async () => {
 		const syncPipe = _Pipe.Sync(1)
@@ -112,6 +113,7 @@ describe('Pipe (Processing along the chain)', () => {
 		const syncPipe = _Pipe.Sync(1)
 			(x => _Result.OkFrom(x.data * 2))
 			(_ => _Result.Error({ tag: 'Error' }))
+			// @ts-ignore
 			((x: any) => x.data * 2)
 
 		let syncStep = 0
@@ -128,6 +130,7 @@ describe('Pipe (Processing along the chain)', () => {
 		const asyncPipe = _Pipe.Async(1)
 			(x => _Result.OkFrom(x.data * 2))
 			(_ => _Result.Error({ tag: 'Error' }))
+			// @ts-ignore
 			((x: any) => x.data * 2)
 
 		let asyncStep = 0

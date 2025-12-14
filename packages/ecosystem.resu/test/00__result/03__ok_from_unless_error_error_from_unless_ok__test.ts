@@ -11,7 +11,6 @@ describe('OkFromUnlessError and ErrorFromUnlessOk Functions', () => {
 				status: 'ok',
 				transformMethod: _Ok.OkFromUnlessError,
 				creatingResultMethod: _Ok.Ok,
-				symbol: _Ok.OK_SYMBOL
 			}
 		],
 		[
@@ -20,12 +19,11 @@ describe('OkFromUnlessError and ErrorFromUnlessOk Functions', () => {
 				status: 'error',
 				transformMethod: _Error.ErrorFromUnlessOk,
 				creatingResultMethod: _Error.Error,
-				symbol: _Error.ERROR_SYMBOL
 			}
 		],
 	]
 
-	describe.each(cases)('%s', (_, { status, transformMethod, creatingResultMethod, symbol }) => {
+	describe.each(cases)('%s', (_, { status, transformMethod, creatingResultMethod }) => {
 		test('Non-results are converted to a result with an optional tag', () => {
 			const anyData = [1, 'string', { code: 200 }]
 			anyData.forEach((data) => {
@@ -33,53 +31,11 @@ describe('OkFromUnlessError and ErrorFromUnlessOk Functions', () => {
 				expect(res1.status).toBe(status)
 				expect(res1.tag).toBeNull()
 				expect(res1.data).toBe(data)
-				//@ts-expect-error
-				expect(res1[symbol]).toBeSymbol()
 
 				const res2 = transformMethod(data, 'SomeTag')
 				expect(res2.status).toBe(status)
 				expect(res2.tag).toBe('SomeTag')
 				expect(res2.data).toBe(data)
-				//@ts-expect-error
-				expect(res2[symbol]).toBeSymbol()
-			})
-		})
-
-		test('Data and a tag are extracted from the result. The tag can be redefined. A result with a different status is returned as it is', () => {
-			const data = { code: 200 }
-			const anyRes = cases.map((el) => el[1].creatingResultMethod({ data, tag: 'InitialTag' }))
-			anyRes.forEach((el) => {
-				const res1 = transformMethod(el)
-				if (res1.status === status) {
-					expect(res1.status).toBe(status)
-					expect(res1.tag).toBeNull()
-					expect(res1.data).toBe(data)
-					//@ts-expect-error
-					expect(res1[symbol]).toBeSymbol()
-				}
-				else {
-					expect(res1.status).not.toBe(status)
-					expect(res1.tag).toBeNull()
-					expect(res1.data).toBe(data)
-					//@ts-expect-error
-					expect(res1[symbol]).toBeSymbol()
-				}
-
-				const res2 = transformMethod(el, 'SomeTag')
-				if (res2.status === status) {
-					expect(res2.status).toBe(status)
-					expect(res2.tag).toBe('SomeTag')
-					expect(res2.data).toBe(data)
-					//@ts-expect-error
-					expect(res2[symbol]).toBeSymbol()
-				}
-				else {
-					expect(res2.status).toBe(status)
-					expect(res2.tag).toBe('SomeTag')
-					expect(res2.data).toBe(data)
-					//@ts-expect-error
-					expect(res2[symbol]).toBeSymbol()
-				}
 			})
 		})
 
@@ -87,6 +43,24 @@ describe('OkFromUnlessError and ErrorFromUnlessOk Functions', () => {
 			const res1 = creatingResultMethod()
 			const res2 = transformMethod(res1)
 			expect(res2).not.toBe(res1)
+		})
+	})
+
+
+	describe('Data and a tag are extracted from the result. The tag can be redefined. A result with a different status is returned as it is', () => {
+		const okRes = _Ok.Ok({ data: 'ok', tag: 'OkTag' })
+		const errorRes = _Error.Error({ data: 'error', tag: 'ErrorTag' })
+
+		test('`Result.Ok` is returned as is when passed to `Result.ErrorFromUnlessOk` and vice versa', () => {
+			const errorFromOk = _Error.ErrorFromUnlessOk(okRes)
+			expect(errorFromOk).toBe(okRes)
+			const errorFromOkWithTag = _Error.ErrorFromUnlessOk(okRes, 'OverrideOkTag')
+			expect(errorFromOkWithTag.tag).toBe('OkTag')
+
+			const okFromError = _Ok.OkFromUnlessError(errorRes)
+			expect(okFromError).toBe(errorRes)
+			const okFromErrorWithTag = _Ok.OkFromUnlessError(errorRes, 'OverrideErrorTag')
+			expect(okFromErrorWithTag.tag).toBe('ErrorTag')
 		})
 	})
 })

@@ -46,9 +46,35 @@ export namespace _Helpers
 		> =
 			| _Utils.Prettify<{
 				status: S
-				tag: T
 				data: D
+				tag: T
 			}>
+
+		/**
+		 * A utilitarian type for creating a new result type.
+		 *
+		 * @template S Status describing the result.
+		 * @template D Optional data.
+		 * @template T Optional tag.
+		 */
+		export function ResultConstructor <
+			S extends string = string,
+			D extends SomeData = null,
+			const T extends SomeTag = null,
+		> (
+			sign: symbol,
+			params: { status: S } & Partial<ResultConstructor<S, D, T>>
+		):
+			ResultConstructor<S, D, T>
+		{
+			const dataIsFalsy = [undefined, null, void 0].includes(params.data as any)
+			if (dataIsFalsy) params.data = null as D
+
+			// tagIsFalsy:
+			params.tag ||= null as T
+
+			return { ...params, [sign]: sign } as ResultConstructor<S, D, T>
+		}
 
 		/**
 		 * Create a new result from the passed value. If the passed value
@@ -56,16 +82,16 @@ export namespace _Helpers
 		 * with new ones.
 		 *
 		 * @template S Status describing the result.
-		 * @template V Source value.
+		 * @template D Source value.
 		 * @template T Optional tag.
 		 */
 		export type ResultFrom<
 			S extends string = string,
-			V extends SomeData = null,
+			D extends SomeData = null,
 			T extends SomeTag = null,
 		> =
-			| V extends ResultConstructor<string, infer Data, infer Tag>
-				? ResultConstructor<S, Data, T extends null ? Tag : T>
-				: ResultConstructor<S, V, T>
+			| D extends ResultConstructor<string, infer D1, infer T1>
+				? ResultConstructor<S, D1, T extends null ? T1 : T>
+				: ResultConstructor<S, D, T>
 	}
 }

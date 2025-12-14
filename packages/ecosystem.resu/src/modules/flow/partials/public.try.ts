@@ -93,6 +93,18 @@ export namespace _Try
 
 	// ---------------------------------------------------------------------
 
+	type ABORT_OPERATION_NAME = typeof ABORT_OPERATION_NAME
+	const ABORT_OPERATION_NAME = 'AbortOperation'
+
+	// Abort operation error:
+	type AbortOperationResult = _Result.Error<globalThis.Error, ABORT_OPERATION_NAME>
+
+	// Abort operation class:
+	export class AbortOperationError extends Error {
+		name = ABORT_OPERATION_NAME
+		message = 'Operation aborted'
+	}
+
 	/**
 	 * Executes a promise and catches errors.
 	 *
@@ -100,9 +112,8 @@ export namespace _Try
 	 */
 	type AsyncFunction<
 		Ok extends _Utils.AllowedReturn,
-		Args extends any[] = []
 	> =
-		| ((...args: Args) => Promise<Ok>)
+		| (() => Promise<Ok>)
 
 	/**
 	 * Configuration for executing a promise and handling errors.
@@ -132,10 +143,10 @@ export namespace _Try
 		Error extends unknown | _Utils.AllowedReturn = _Result.Error<unknown>
 	> = {
 		signal: AbortSignal
-		try: AsyncFunction<Ok, [signal: AbortSignal]>
+		try: AsyncFunction<Ok>
 	} | {
 		signal: AbortSignal
-		try: AsyncFunction<Ok, [signal: AbortSignal]>
+		try: AsyncFunction<Ok>
 		catch: (error: unknown) => Error
 	}
 
@@ -144,7 +155,7 @@ export namespace _Try
 	 *
 	 * - `try` may return {@link _Result.Ok `Result.Ok`} to set the tag and result data.
 	 * - `catch` may return {@link _Result.Error `Result.Error`} to set the tag and error data.
-	 * - `signal` is a cancellation signal. If `abort` is called, it returns {@link _Result.Error `Result.Error<Error, 'AbortError'>`}.
+	 * - `signal` is a cancellation signal. If `abort` is called, it returns {@link _Result.Error `Result.Error<Error, 'AbortOperation'>`}.
 	 *
 	 * @param config Callbacks for execution and error handling.
 	 */
@@ -154,7 +165,7 @@ export namespace _Try
 	> (
 		config: AsyncConfigWithSignal<Ok, Error>
 	):
-		Promise<_Utils.Prettify<TryReturn<Ok, Error> | _Result.Error<globalThis.Error, 'AbortError'>>>
+		Promise<_Utils.Prettify<TryReturn<Ok, Error> | AbortOperationResult>>
 
 	/**
 	 * Executes the promise `config.try` and intercepts errors via `config.catch`:
@@ -192,23 +203,43 @@ export namespace _Try
 			| AsyncConfig<Ok, Error>
 			| AsyncConfigWithSignal<Ok, Error>
 	):
-		Promise<TryReturn<Ok, Error> | _Result.Error<globalThis.Error, 'AbortError'>>
+		Promise<TryReturn<Ok, Error> | AbortOperationResult>
 	{
-		const tryFunc = (typeof arg === 'object' ? arg.try : arg) as AsyncFunction<Ok, [signal?: AbortSignal]>
+		const tryFunc = (typeof arg === 'object' ? arg.try : arg) as AsyncFunction<Ok>
 		const catchFunc = (typeof arg === 'object' && 'catch' in arg ? arg.catch : null) || ((data: unknown) => _Result.Error({ data, log: false }))
 		const signal = typeof arg === 'object' && 'signal' in arg ? arg.signal : undefined
 
+		// Проверяем, не отменена ли операция еще до начала:
+		if (signal?.aborted) return <AbortOperationResult> _Result.Error({
+			data: new AbortOperationError(),
+			tag: ABORT_OPERATION_NAME,
+		})
+
 		try {
-			const tryFuncResult = await tryFunc(signal)
+			const tryPromise = tryFunc()
+			const abortPromise = !signal ? null : new Promise((_, rej) => {
+				signal.addEventListener('abort', () => {
+					rej(new AbortOperationError())
+				}, { once: true })
+			})
+
+			// Гонка между выполнением и отменой:
+			const tryFuncResult = abortPromise
+				? await Promise.race([tryPromise, abortPromise])
+				: await tryPromise
+
 			const result = _Result.IsResult(tryFuncResult) ? tryFuncResult : _Result.OkFrom(tryFuncResult)
 			return result as TryReturn<Ok, Error>
 		}
 		catch (error) {
-			const isAbortError = signal && error instanceof Error && error.name === 'AbortError'
-			if (isAbortError) return _Result.Error({ data: error, tag: 'AbortError' }) as _Result.Error<globalThis.Error, 'AbortError'>
+			const isAbortedOperation = error instanceof Error && error.name === ABORT_OPERATION_NAME
+			if (isAbortedOperation) return _Result.ErrorFrom(error, ABORT_OPERATION_NAME) as any as AbortOperationResult
 
 			const catchFuncResult = catchFunc(error)
-			const result = _Result.IsResult(catchFuncResult) ? catchFuncResult : _Result.ErrorFrom(catchFuncResult)
+			const result = _Result.IsResult(catchFuncResult)
+				? catchFuncResult
+				: _Result.ErrorFrom(catchFuncResult)
+
 			return result as TryReturn<Ok, Error>
 		}
 	}

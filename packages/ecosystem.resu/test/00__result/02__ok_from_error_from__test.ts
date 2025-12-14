@@ -41,7 +41,7 @@ describe('OkFrom and ErrorFrom Functions', () => {
 			anyRes.forEach((el) => {
 				const res1 = transformMethod(el)
 				expect(res1.status).toBe(status)
-				expect(res1.tag).toBeNull()
+				expect(res1.tag).toBe('InitialTag')
 				expect(res1.data).toBe(data)
 				//@ts-expect-error
 				expect(res1[symbol]).toBeSymbol()
